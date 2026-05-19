@@ -26,19 +26,22 @@ Isso gera atrasos no cronograma, dificuldade em reportar imprevistos na via e ri
 ---
 
 ## 💡 Proposta de Solução
-O VegiaMonitor versão mobile é um aplicativo focado em conectar os operadores de campo aos gestores. 
-
-Ele permite que as equipes de corte acessem seus cronogramas diários, verifiquem as condições da rodovia em tempo real e mudanças de rota vindas diretamente do gestor de monitoramento.
+O **VegiaMonitor** é um aplicativo mobile focado em criar uma ponte digital entre o campo e a gestão da Motiva. Ele centraliza a rotina do operador de campo, permitindo visualizar cronogramas de trabalho com indicadores visuais de prazo, acompanhar o score e a condição exata da rodovia (nível da grama), receber alertas da gestão em tempo real e facilitar o contato rápido com os supervisores.
 
 ---
 
 ## 🛠️ Stack Tecnológica e Justificativa
 
 * **Frontend Mobile:** React Native com Expo.
-  * *Justificativa:* Permite o desenvolvimento ágil e multiplataforma (iOS e Android) com uma única base de código. O ecossistema do Expo facilita o acesso nativo a recursos vitais para o projeto, como a Câmera e o GPS do dispositivo.
-* **Navegação:** React Navigation (Stack e Tab).
-  * *Justificativa:* Garante fluxos de tela fluidos e nativos para o usuário alternar entre cronograma, rodovia e perfil.
-* **Geolocalização e Mapas:** `expo-location` e `react-native-maps`.
-  * *Justificativa:* Essencial para rastrear onde a frente de trabalho está atuando e para relatar ocorrências na via com coordenadas exatas para os relatórios da ARTESP/ANTT.
+  * *Justificativa:* Permite o desenvolvimento ágil e multiplataforma com uma única base de código em JavaScript/TypeScript. O ecossistema do Expo agiliza o setup do projeto e o teste em dispositivos físicos.
+* **Navegação:** React Navigation (Bottom Tabs e Stack).
+  * *Justificativa:* Garante uma navegação fluida entre as telas principais (Cronograma, Rodovia, Perfil) e fluxos modais (Notificações, Login), simulando o comportamento nativo esperado pelos usuários.
 * **Armazenamento Local:** AsyncStorage.
-  * *Justificativa:* Rodovias frequentemente possuem pontos sem sinal de celular. O app precisa salvar o cronograma e os dados localmente para funcionar offline e sincronizar automaticamente quando a rede for reestabelecida."# vegiamonitormobile" 
+  * *Justificativa:* Essencial para a estratégia *offline-first*. Permite salvar os dados do cronograma e o status da rodovia no cache do celular, garantindo que o app funcione em áreas de "sombra" de sinal de celular comuns nas estradas.
+* **Integração Externa:** Deep Linking (`Linking` do React Native).
+  * *Justificativa:* Utilizado na tela de Perfil para redirecionar o usuário diretamente para o WhatsApp corporativo do gestor, facilitando a comunicação imediata.
+
+---
+
+## 📱 Protótipo Figma
+🔗 [Clique aqui para acessar o protótipo navegável no Figma](https://www.figma.com/proto/e7N028hcvrNlGwY91rd7N2/Prot%C3%B3tipo-Vegia-Monitor-Mobile?node-id=2-2&p=f&t=ExTvm6irflxRztrv-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=2%3A2)
