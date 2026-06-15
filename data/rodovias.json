@@ -1,0 +1,169 @@
+[
+    {
+        "id": "1",
+        "rodovia": "SP - 021",
+        "estado": "São Paulo",
+        "limiteAlturaVegetacao": 15,
+        "situacaoAtual": {
+            "score": 60,
+            "status": "atenção",
+            "corStatus": "#FFDE21",
+            "corTextoStatus": "#7D6608"
+        },
+        "equipes": {
+            "disponiveis": 2
+        },
+        "detalhesKms": [
+            {
+                "km": 1,
+                "alturaVegetacao": 33,
+                "nivel": 3
+            },
+            {
+                "km": 2,
+                "alturaVegetacao": 15,
+                "nivel": 2
+            },
+            {
+                "km": 3,
+                "alturaVegetacao": 4,
+                "nivel": 1
+            },
+            {
+                "km": 4,
+                "alturaVegetacao": 8,
+                "nivel": 1
+            },
+            {
+                "km": 5,
+                "alturaVegetacao": 6,
+                "nivel": 1
+            },
+            {
+                "km": 6,
+                "alturaVegetacao": 9,
+                "nivel": 1
+            },
+            {
+                "km": 7,
+                "alturaVegetacao": 3,
+                "nivel": 1
+            },
+            {
+                "km": 8,
+                "alturaVegetacao": 8,
+                "nivel": 1
+            },
+            {
+                "km": 9,
+                "alturaVegetacao": 5,
+                "nivel": 1
+            },
+            {
+                "km": 10,
+                "alturaVegetacao": 2,
+                "nivel": 1
+            },
+            {
+                "km": 11,
+                "alturaVegetacao": 7,
+                "nivel": 1
+            },
+            {
+                "km": 12,
+                "alturaVegetacao": 6,
+                "nivel": 1
+            },
+            {
+                "km": 13,
+                "alturaVegetacao": 9,
+                "nivel": 1
+            },
+            {
+                "km": 14,
+                "alturaVegetacao": 4,
+                "nivel": 1
+            },
+            {
+                "km": 15,
+                "alturaVegetacao": 12,
+                "nivel": 2
+            },
+            {
+                "km": 16,
+                "alturaVegetacao": 15,
+                "nivel": 2
+            },
+            {
+                "km": 17,
+                "alturaVegetacao": 18,
+                "nivel": 2
+            },
+            {
+                "km": 18,
+                "alturaVegetacao": 11,
+                "nivel": 2
+            },
+            {
+                "km": 19,
+                "alturaVegetacao": 19,
+                "nivel": 2
+            },
+            {
+                "km": 20,
+                "alturaVegetacao": 14,
+                "nivel": 2
+            },
+            {
+                "km": 21,
+                "alturaVegetacao": 32,
+                "nivel": 3
+            },
+            {
+                "km": 22,
+                "alturaVegetacao": 45,
+                "nivel": 3
+            },
+            {
+                "km": 23,
+                "alturaVegetacao": 31,
+                "nivel": 3
+            },
+            {
+                "km": 24,
+                "alturaVegetacao": 50,
+                "nivel": 3
+            },
+            {
+                "km": 25,
+                "alturaVegetacao": 33,
+                "nivel": 3
+            },
+            {
+                "km": 26,
+                "alturaVegetacao": 38,
+                "nivel": 3
+            },
+            {
+                "km": 27,
+                "alturaVegetacao": 41,
+                "nivel": 3
+            },
+            {
+                "km": 28,
+                "alturaVegetacao": 35,
+                "nivel": 3
+            },
+            {
+                "km": 29,
+                "alturaVegetacao": 39,
+                "nivel": 3
+            },
+            {
+                "km": 30,
+                "alturaVegetacao": 42,
+                "nivel": 3
+            }
+        ]
+    }
+]

@@ -17,11 +17,6 @@ export default function LoginScreen({ navigation }) {
     if (sucesso){
       router.replace('/cronograma')
     }
-
-  };
-
-  const logaparateste = () => {
-    router.replace('/cronograma')
   };
 
   return (
@@ -30,18 +25,18 @@ export default function LoginScreen({ navigation }) {
       
       <View style={styles.header}>
         <View style={styles.avatarContainer}>
-          <Text style={styles.avatarText}>M</Text>
+          <Text style={styles.avatarTexto}>M</Text>
         </View>
-        <View style={styles.headerTextContainer}>
-          <Text style={styles.headerTitle}>VegiaMonitor</Text>
-          <Text style={styles.headerSubtitle}>FIAP + Motiva</Text>
+        <View>
+          <Text style={styles.headerTitulo}>VegiaMonitor</Text>
+          <Text style={styles.headerSubTitulo}>FIAP + Motiva</Text>
         </View>
       </View>
 
       <View style={styles.body}>
         
         <Image 
-          style={styles.illustration}
+          style={styles.imagem}
           resizeMode="contain"
           source={require('../assets/imagemlogin.jpg')} 
         />
@@ -70,11 +65,7 @@ export default function LoginScreen({ navigation }) {
           {erro ? <Text style={{color: 'red', textAlign: 'center', marginBottom: 10}}>{erro}</Text> : null}
 
           <TouchableOpacity style={styles.button} activeOpacity={0.8} onPress={handleSubmeter}>
-            <Text style={styles.buttonText}>Entrar22</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.button} activeOpacity={0.8} onPress={logaparateste}>
-            <Text style={styles.buttonText}>Entrar22</Text>
+            <Text style={styles.buttonText}>Entrar</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -104,32 +95,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 15,
   },
-  avatarText: {
+  avatarTexto: {
     fontSize: 28,
     fontWeight: 'bold',
     color: '#612BFF',
   },
-  headerTextContainer: {
-    justifyContent: 'center',
-  },
-  headerTitle: {
+  headerTitulo: {
     fontSize: 22,
     fontWeight: 'bold',
     color: '#FFFFFF',
     marginBottom: 4,
   },
-  headerSubtitle: {
+  headerSubTitulo: {
     fontSize: 14,
     color: '#D4C4FF', 
     fontWeight: '500',
   },
   body: {
     flex: 1,
-    backgroundColor: '#F6F6FC',
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     paddingHorizontal: 30,
   },
-  illustration: {
+  imagem: {
     width: 250,
     height: 200,
     marginTop: 50,
@@ -146,10 +134,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333333',
     marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 5,
     elevation: 2,
   },
   button: {
@@ -159,7 +143,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
     marginBottom: 20,
-
     shadowColor: '#612BFF',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,

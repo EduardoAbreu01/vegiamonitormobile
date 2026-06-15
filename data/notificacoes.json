@@ -1,0 +1,24 @@
+[
+  {
+    "id": "0",
+    "rodovia": "SP - 021",
+    "titulo": "Acidente no KM 12",
+    "descricao": "Acidente envolvendo 3 veículos.",
+    "data": "16/06",
+    "hora": "16:12",
+    "tipo": "Alerta",
+    "icone": "warning",
+    "color": "#FDE047" 
+  },
+  {
+    "id": "1",
+    "rodovia": "Geral",
+    "titulo": "Treinamento Marcado",
+    "descricao": "No dia 25/06, às 9h, ocorrerá um treinamento focado em boas práticas no trabalho o evento ocorrerá no auditório. Comunique seus colegas.",
+    "data": "19/06",
+    "hora": "8:21",
+    "tipo": "Informativo",
+    "icone": "chatbubble",
+    "color": "#4ADE80"
+  }
+]

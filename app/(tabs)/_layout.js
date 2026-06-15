@@ -5,7 +5,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function TabLayout() {
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: '#E83D84' }}>
+    <Tabs screenOptions={{ tabBarActiveTintColor: '#E83D84',headerShown: false  }}>
       <Tabs.Screen
         name="cronograma"
         options={{

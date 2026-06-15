@@ -1,0 +1,32 @@
+[
+    {
+        "id": "0",
+        "cpf": "33333333333",
+        "senha": "123456",
+        "cargo": "Operador",
+        "nome": "João",
+        "equipe": "Equipe 1",
+        "foto": "https://img.somake.ai/cdn-cgi/image/width=800,quality=80,format=auto,fit=scale-down/tools/examples/face-generator_gallery_1763099237_4902.jpg",
+        "contatoGestor": "55911111111"
+    },
+    {
+        "id": "1",
+        "cpf": "1",
+        "senha": "1",
+        "cargo": "Operador",
+        "nome": "Lorival",
+        "equipe": "Equipe 2",
+        "foto": "https://machinecurve.com/static/images/thispersondoesnotexist-1-1022x1024.jpg",
+        "contatoGestor": "55911111111"
+    },
+    {
+        "id": "2",
+        "cpf": "12312312312",
+        "senha": "123456",
+        "cargo": "Operador",
+        "nome": "Gustavo",
+        "equipe": "Equipe 2",
+        "foto": "https://machinecurve.com/static/images/thispersondoesnotexist-1-1022x1024.jpg",
+        "contatoGestor": "55911111111"
+    }
+]

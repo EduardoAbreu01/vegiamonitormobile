@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext } from 'react';
 
-import usuariosDB from '../app/usuarios.json'; 
+import usuariosDB from '../data/usuarios.json'; 
 
 const AuthContext = createContext();
 
