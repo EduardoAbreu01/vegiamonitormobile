@@ -41,6 +41,39 @@ O **VegiaMonitor** é um aplicativo mobile focado em criar uma ponte digital ent
 * **Integração Externa:** Deep Linking (`Linking` do React Native).
   * *Justificativa:* Utilizado na tela de Perfil para redirecionar o usuário diretamente para o WhatsApp corporativo do gestor, facilitando a comunicação imediata.
 
+ ## Como Executar o Projeto
+
+### Pré-requisitos
+- Node.js instalado em sua máquina.
+- Expo CLI instalado globalmente (`npm install -g expo-cli`).
+- Aplicativo Expo Go instalado no seu dispositivo móvel (iOS ou Android) ou um emulador configurado.
+
+### Instalação e Execução
+1. Clone o repositório para a sua máquina:
+```bash
+git clone https://github.com/EduardoAbreu01/vegiamonitormobile.git
+```
+2. Instale as dependências necessárias:
+```bash
+npm install --legacy-peer-deps
+```
+3. Inicie o servidor de desenvolvimento:
+```bash
+npm run android
+```
+6. Escaneie o QR Code gerado no terminal utilizando o aplicativo Expo Go no seu smartphone ou pressione `a` para abrir no emulador Android / `i` para abrir no emulador iOS.
+
+---
+
+##  Mocks de Dados
+
+Para viabilizar o uso em áreas sem internet, o app consome dados estruturados de arquivos locais JSON, simulando uma API:
+
+* **`usuarios.json`:** Valida o acesso no `AuthContext` na tela de login e preenche dinamicamente a tela de Perfil (foto, cargo, equipe e telefone de WhatsApp do gestor).
+* **`notificacoes.json`:** Alimenta a `FlatList` da central de Notificações, exibindo alertas de emergência e avisos informativos.
+* **`rodovias.json`:** Fornece o score de conservação e segmenta os quilômetros da via por níveis de altura de vegetação.
+* **`rocadas.json`:** Lista as tarefas de corte da equipe para a exibição no Cronograma. Os dados são calculados contra a data atual para filtrar as ações que ainda não foram realizadas na tela de cronograma e rodovia.
+
 ---
 
 ## 📱 Protótipo Figma
