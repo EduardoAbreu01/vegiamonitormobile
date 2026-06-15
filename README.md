@@ -57,11 +57,15 @@ git clone https://github.com/EduardoAbreu01/vegiamonitormobile.git
 ```bash
 npm install --legacy-peer-deps
 ```
-3. Inicie o servidor de desenvolvimento:
+3. Instale o expo-linking:
+```bash
+npx expo install expo-linking
+```
+4. Inicie o servidor de desenvolvimento:
 ```bash
 npm run android
 ```
-6. Escaneie o QR Code gerado no terminal utilizando o aplicativo Expo Go no seu smartphone ou pressione `a` para abrir no emulador Android / `i` para abrir no emulador iOS.
+5. Escaneie o QR Code gerado no terminal utilizando o aplicativo Expo Go no seu smartphone ou pressione `a` para abrir no emulador Android / `i` para abrir no emulador iOS.
 
 ---
 
