@@ -129,5 +129,8 @@ Abaixo estão algumas das principais telas do **VegiaMonitor**, projetadas com a
 | ![Detalhes](./assets/detalhes-tela.png) | ![Perfil](./assets/perfil-tela.png) | ![Notificações](./assets/notificacoes-tela.png) |
 | *Filtro de trechos críticos (KM a KM)* | *Dados operacionais e WhatsApp* | *Histórico e filtros de avisos* |
 
+## Link do Youtube
+🔗 [Clique aqui para acessar o vídeo de demonstração](https://www.youtube.com/watch?v=RioUBZpXpA8)
+
 ## 📱 Protótipo Figma
 🔗 [Clique aqui para acessar o protótipo navegável no Figma](https://www.figma.com/proto/e7N028hcvrNlGwY91rd7N2/Prot%C3%B3tipo-Vegia-Monitor-Mobile?node-id=2-2&p=f&t=ExTvm6irflxRztrv-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=2%3A2)
