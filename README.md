@@ -10,6 +10,42 @@
 * Rodrigo Campos Cordeiro
 
 ---
+## 🚦 Status das Funcionalidades (Sprint 3 — Protótipo Funcional Completo)
+
+| Funcionalidade | Descrição | Status Atual |
+| :--- | :--- | :---: |
+| **Autenticação por CPF e Senha** | Validação de credenciais de operador/equipe através de contexto global (`AuthContext`) consumindo dados do `usuarios.json`. | 🟢 **Concluído** |
+| **Dashboard de Condições da Rodovia** | Exibição do Score Geral de Conservação (gerado por IA) e segmentação dos trechos por nível de vegetação. | 🟢 **Concluído** |
+| **Cronograma Operacional** | Lista de atividades de corte/roçada pendentes, filtradas dinamicamente de acordo com a equipe do colaborador logado. | 🟢 **Concluído** |
+| **Indicadores Visuais de Prazo** | Código de cores dinâmico no cronograma (Verde: Hoje, Amarelo: Esta Semana, Vermelho: Próxima Semana) e modal informativo de legenda. | 🟢 **Concluído** |
+| **Central de Notificações** | Exibição de alertas urgentes e informativos de segurança e alterações de rota. | 🟢 **Concluído** |
+| **Perfil e Integração WhatsApp** | Exibição de dados do colaborador logado e redirecionamento direto via Deep Linking para o WhatsApp do supervisor. | 🟢 **Concluído** |
+| **Documento de Testes Manuais** | Tabela contendo os 5+ fluxos principais testados, resultados esperados vs. obtidos e status de execução (`TESTES.md`). | 🟢 **Concluído** |
+
+---
+
+## ☀️ Design e Acessibilidade em Campo (Visibilidade sob Luz Solar)
+
+Como a aplicação é voltada para operadores que atuam diretamente em trechos abertos de rodovias, **a interface visual foi especialmente projetada para garantir máxima legibilidade em ambientes sob forte incidência de luz solar e reflexos na tela**:
+
+* **Alto Contraste Visual:** Utilização de fundos claros (`#F8FAFC` e `#FFFFFF`) combinados com tipografia pesada (`fontWeight: 'bold'`) em tons escuros (`#0F172A` e `#000000`), evitando cores pasteis ou neutras que somem sob a iluminação solar direta.
+* **Sinalização Visual de Alto Impacto:** Elementos de status e urgência utilizam blocos de cores saturadas e barras laterais calibradas (Verde Vivo `#00E676`, Amarelo `#FFEA00` e Rosa/Vermelho Neon `#FF1453`), permitindo identificação imediata da prioridade sem necessidade de esforço visual ou leitura atenta de pequenos textos.
+* **Hierarquia Tipográfica Expandida:** Títulos e indicadores principais possuem tamanhos de fonte ampliados (22px/18px com negrito) para garantir leitura rápida mesmo em movimento ou em smartphones com película protetora acentuada por poeira e reflexos.
+* **Áreas de Toque Ampliadas (Touch Targets):** Botões e seletores possuem preenchimento extra (*paddings* de 12px a 16px) e bordas bem definidas, facilitando o manuseio rápido por operadores no campo.
+
+---
+
+## ⚠️ Pendências Identificadas & Plano de Ajustes (Sprint 4)
+
+### Pendências Identificadas
+1. **Consumo de Dados:** Dependência exclusiva de Mocks JSON locais (`usuarios.json`, `rocadas.json`, `rodovias.json`).
+2. **Persistência de Dados Offline:** Necessidade de aprimorar a sincronização e cache de alterações locais via `AsyncStorage` quando houver perda de conexão na estrada.
+3. **Feedback de Ações:** Adicionar feedbacks visuais (loaders e componentes Toast/Alerts customizados) ao realizar a troca de dados ou tentar login sem conexão.
+
+### Plano de Ajustes para a Sprint 4
+* **Integração com Backend API:** Substituir a camada de mocks por chamadas HTTP RESTful para consumo de dados em tempo real.
+* **Estratégia Offline-First:** Implementar fila de sincronização (Sync Queue) com `AsyncStorage` para armazenar status das roçadas quando offline e disparar para a API assim que a conexão for reestabelecida.
+* **Refinamento de UI/UX:** Adicionar telas de *Skeleton Loading* nas listas e tratamento de estados vazios (*empty states*).
 
 ## ⚠️ O Problema Escolhido
 A falta de comunicação em tempo real e a ausência de rastreabilidade entre os gestores de monitoramento e as frentes de conservação rodoviária (como as equipes de corte). 
@@ -69,7 +105,7 @@ npm run android
 
 ---
 
-##  Mocks de Dados
+## 📂 Mocks de Dados
 
 Para viabilizar o uso em áreas sem internet, o app consome dados estruturados de arquivos locais JSON, simulando uma API:
 

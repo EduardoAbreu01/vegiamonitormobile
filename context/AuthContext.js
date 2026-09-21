@@ -7,17 +7,15 @@ export const AuthProvider = ({ children }) => {
     const [usuario, setUsuario] = useState(null);
     const [erro, setErro] = useState('');
 
-    const login = (cpfDigitado) => {
-        if (!cpfDigitado) {
-            setErro('Preencha o CPF.');
+    const login = (cpfDigitado, senhaDigitada) => {
+        if (!cpfDigitado || !senhaDigitada) {
+            setErro('Preencha o CPF e a senha.');
             return false;
         }
 
-        // Remove caracteres especiais do CPF
         const cpfLimpo = cpfDigitado.replace(/\D/g, '');
-
         const usuarioEncontrado = usuariosDB.find(
-            u => u.cpf.replace(/\D/g, '') === cpfLimpo
+            u => u.cpf.replace(/\D/g, '') === cpfLimpo && u.senha === senhaDigitada
         );
 
         if (usuarioEncontrado) {
@@ -25,7 +23,7 @@ export const AuthProvider = ({ children }) => {
             setErro('');
             return true;
         } else {
-            setErro('CPF não encontrado.');
+            setErro('CPF ou senha inválidos.');
             return false;
         }
     };
