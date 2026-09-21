@@ -115,6 +115,19 @@ Para viabilizar o uso em áreas sem internet, o app consome dados estruturados d
 * **`rocadas.json`:** Lista as tarefas de corte da equipe para a exibição no Cronograma. Os dados são calculados contra a data atual para filtrar as ações que ainda não foram realizadas na tela de cronograma e rodovia.
 
 ---
+## Demonstração Visual do Aplicativo
+
+Abaixo estão algumas das principais telas do **VegiaMonitor**, projetadas com alto contraste e foco na usabilidade em campo sob luz solar direta:
+
+| Tela de Login | Aba Cronograma | Dashboard da Rodovia |
+| :---: | :---: | :---: |
+| ![Login](./assets/login-tela.png) | ![Cronograma](./assets/cronograma-tela.png) | ![Rodovia](./assets/rodovia-tela.png) |
+| *Autenticação segura por CPF e senha* | *Cronograma de roçadas com prazos* | *Score de IA e status da rodovia* |
+
+| Detalhamento de Trechos | Perfil do Operador | Central de Alertas |
+| :---: | :---: | :---: |
+| ![Detalhes](./assets/detalhes-tela.png) | ![Perfil](./assets/perfil-tela.jpg) | ![Notificações](./assets/notificacoes-tela.jpg) |
+| *Filtro de trechos críticos (KM a KM)* | *Dados operacionais e WhatsApp* | *Histórico e filtros de avisos* |
 
 ## 📱 Protótipo Figma
 🔗 [Clique aqui para acessar o protótipo navegável no Figma](https://www.figma.com/proto/e7N028hcvrNlGwY91rd7N2/Prot%C3%B3tipo-Vegia-Monitor-Mobile?node-id=2-2&p=f&t=ExTvm6irflxRztrv-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=2%3A2)
