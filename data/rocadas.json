@@ -1,82 +1,222 @@
 [
   {
     "id": "0",
-    "data": "25/05/26",
-    "dia": "seg",
+    "data": "10/09/26",
+    "dia": "qui",
     "equipe": "Equipe 1",
-    "local": "Sp - 021",
-    "km": "13",
+    "local": "SP - 021",
+    "km": "11",
     "servico": "Corte",
-    "scoreIA": "9"
+    "scoreIA": "15",
+    "status": "Concluído"
   },
   {
     "id": "1",
-    "data": "26/05/26",
-    "dia": "ter",
-    "equipe": "Equipe 1",
-    "local": "Sp - 021",
-    "km": "9",
+    "data": "12/09/26",
+    "dia": "sáb",
+    "equipe": "Equipe 2",
+    "local": "SP - 021",
+    "km": "7",
     "servico": "Corte",
-    "scoreIA": "12"
+    "scoreIA": "18",
+    "status": "Concluído"
   },
   {
     "id": "2",
-    "data": "28/06/26",
-    "dia": "qui",
+    "data": "15/09/26",
+    "dia": "ter",
     "equipe": "Equipe 1",
-    "local": "Sp - 021",
-    "km": "3",
+    "local": "SP - 021",
+    "km": "4",
     "servico": "Corte",
-    "scoreIA": "19"
+    "scoreIA": "8",
+    "status": "Concluído"
   },
   {
     "id": "3",
-    "data": "01/06/26",
-    "dia": "seg",
-    "equipe": "Equipe 1",
-    "local": "Sp - 021",
-    "km": "18",
+    "data": "16/09/26",
+    "dia": "qua",
+    "equipe": "Equipe 2",
+    "local": "SP - 021",
+    "km": "9",
     "servico": "Corte",
-    "scoreIA": "16"
+    "scoreIA": "12",
+    "status": "Concluído"
+  },
+  {
+    "id": "4",
+    "data": "18/09/26",
+    "dia": "sex",
+    "equipe": "Equipe 3",
+    "local": "SP - 021",
+    "km": "15",
+    "servico": "Corte",
+    "scoreIA": "20",
+    "status": "Concluído"
   },
   {
     "id": "5",
-    "data": "15/06/26",
-    "dia": "ter",
-    "equipe": "Equipe 2",
-    "local": "Sp - 021",
-    "km": "9",
+    "data": "20/09/26",
+    "dia": "dom",
+    "equipe": "Equipe 1",
+    "local": "SP - 021",
+    "km": "2",
     "servico": "Corte",
-    "scoreIA": "12"
+    "scoreIA": "10",
+    "status": "Concluído"
   },
   {
     "id": "6",
-    "data": "14/06/26",
-    "dia": "ter",
+    "data": "21/09/26",
+    "dia": "seg",
     "equipe": "Equipe 2",
-    "local": "Sp - 021",
-    "km": "21",
+    "local": "SP - 021",
+    "km": "14",
     "servico": "Corte",
-    "scoreIA": "12"
+    "scoreIA": "14",
+    "status": "Pendente"
   },
   {
     "id": "7",
-    "data": "20/06/26",
+    "data": "23/09/26",
     "dia": "qua",
-    "equipe": "Equipe 2",
-    "local": "Sp - 021",
-    "km": "5",
+    "equipe": "Equipe 1",
+    "local": "SP - 021",
+    "km": "13",
     "servico": "Corte",
-    "scoreIA": "11"
+    "scoreIA": "9",
+    "status": "Pendente"
   },
   {
     "id": "8",
-    "data": "30/06/26",
+    "data": "23/09/26",
     "dia": "qua",
     "equipe": "Equipe 2",
-    "local": "Sp - 021",
+    "local": "SP - 021",
+    "km": "21",
+    "servico": "Corte",
+    "scoreIA": "12",
+    "status": "Pendente"
+  },
+  {
+    "id": "9",
+    "data": "24/09/26",
+    "dia": "qui",
+    "equipe": "Equipe 1",
+    "local": "SP - 021",
+    "km": "9",
+    "servico": "Corte",
+    "scoreIA": "12",
+    "status": "Pendente"
+  },
+  {
+    "id": "10",
+    "data": "25/09/26",
+    "dia": "sex",
+    "equipe": "Equipe 3",
+    "local": "SP - 021",
+    "km": "27",
+    "servico": "Corte",
+    "scoreIA": "25",
+    "status": "Pendente"
+  },
+  {
+    "id": "11",
+    "data": "28/09/26",
+    "dia": "seg",
+    "equipe": "Equipe 3",
+    "local": "SP - 021",
+    "km": "8",
+    "servico": "Corte",
+    "scoreIA": "13",
+    "status": "Pendente"
+  },
+  {
+    "id": "12",
+    "data": "29/09/26",
+    "dia": "ter",
+    "equipe": "Equipe 2",
+    "local": "SP - 021",
+    "km": "5",
+    "servico": "Corte",
+    "scoreIA": "11",
+    "status": "Pendente"
+  },
+  {
+    "id": "13",
+    "data": "30/09/26",
+    "dia": "qua",
+    "equipe": "Equipe 1",
+    "local": "SP - 021",
+    "km": "3",
+    "servico": "Corte",
+    "scoreIA": "19",
+    "status": "Pendente"
+  },
+  {
+    "id": "14",
+    "data": "02/10/26",
+    "dia": "sex",
+    "equipe": "Equipe 3",
+    "local": "SP - 021",
+    "km": "19",
+    "servico": "Corte",
+    "scoreIA": "16",
+    "status": "Pendente"
+  },
+  {
+    "id": "15",
+    "data": "05/10/26",
+    "dia": "seg",
+    "equipe": "Equipe 1",
+    "local": "SP - 021",
+    "km": "22",
+    "servico": "Corte",
+    "scoreIA": "21",
+    "status": "Pendente"
+  },
+  {
+    "id": "16",
+    "data": "09/10/26",
+    "dia": "sex",
+    "equipe": "Equipe 2",
+    "local": "SP - 021",
+    "km": "30",
+    "servico": "Corte",
+    "scoreIA": "9",
+    "status": "Pendente"
+  },
+  {
+    "id": "17",
+    "data": "12/10/26",
+    "dia": "seg",
+    "equipe": "Equipe 3",
+    "local": "SP - 021",
+    "km": "12",
+    "servico": "Corte",
+    "scoreIA": "17",
+    "status": "Pendente"
+  },
+  {
+    "id": "18",
+    "data": "15/10/26",
+    "dia": "qui",
+    "equipe": "Equipe 2",
+    "local": "SP - 021",
     "km": "17",
     "servico": "Corte",
-    "scoreIA": "22"
+    "scoreIA": "22",
+    "status": "Pendente"
+  },
+  {
+    "id": "19",
+    "data": "22/10/26",
+    "dia": "qui",
+    "equipe": "Equipe 1",
+    "local": "SP - 021",
+    "km": "18",
+    "servico": "Corte",
+    "scoreIA": "16",
+    "status": "Pendente"
   }
 ]

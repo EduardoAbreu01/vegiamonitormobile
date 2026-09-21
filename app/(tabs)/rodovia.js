@@ -1,288 +1,374 @@
-import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
-import Header from '../../components/header'; 
+import React, { useMemo } from 'react';
+import {
+    View,
+    Text,
+    StyleSheet,
+    ScrollView,
+    StatusBar,
+    Platform,
+    TouchableOpacity
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
+import { router } from 'expo-router'; 
+import Header from '../../components/header';
 
-import rodoviasDB from '../../data/rodovias.json'; 
-import cronogramasDB from '../../data/rocadas.json'; 
+import rodoviasDB from '../../data/rodovias.json';
+import cronogramasDB from '../../data/rocadas.json';
+import { useAuth } from '../../context/AuthContext';
 
 export default function RodoviaScreen() {
-    const dadosRodovia = rodoviasDB[0];
-    const { situacaoAtual, equipes, detalhesKms } = dadosRodovia;
+    const insets = useSafeAreaInsets();
+    const { usuario } = useAuth(); 
 
-    let qtdNivel1 = 0;
-    let qtdNivel2 = 0;
-    let qtdNivel3 = 0;
-
-    detalhesKms.forEach(item => {
-        if (item.nivel === 1) qtdNivel1++;
-        else if (item.nivel === 2) qtdNivel2++;
-        else if (item.nivel === 3) qtdNivel3++;
-    });
-
-    const cond = {
-        nivel3: { descricao: "Nível 3 (>30cm):", quantidadeKm: qtdNivel3, cor: "#FF1453" },
-        nivel2: { descricao: "Nível 2 (10-20cm):", quantidadeKm: qtdNivel2, cor: "#FFEA00" },
-        nivel1: { descricao: "Nível 1 (<10cm):", quantidadeKm: qtdNivel1, cor: "#00E676" }
+    const dadosRodovia = rodoviasDB?.[0] || {
+        rodovia: 'SP - 021',
+        situacaoAtual: { status: 'ATENÇÃO', score: '60' },
+        equipes: { disponiveis: 2 },
+        detalhesKms: []
     };
 
-    let rocadasExecutadas = 0;
-    let rocadasProgramadas = 0;
+    const { situacaoAtual, equipes, detalhesKms = [] } = dadosRodovia;
 
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
-   cronogramasDB.forEach(item => {
-        const localNormalizado = item.local.replace(/\s+/g, '').toLowerCase();
-        const rodoviaNormalizada = dadosRodovia.rodovia.replace(/\s+/g, '').toLowerCase();
-        
-        if (localNormalizado === rodoviaNormalizada) {
-            const [diaStr, mesStr] = item.data.split('/');
-            const anoAtual = hoje.getFullYear();
-            
-            const dataItem = new Date(anoAtual, parseInt(mesStr) - 1, parseInt(diaStr));
-            
-            const diferencaMs = Math.abs(hoje.getTime() - dataItem.getTime());
-            
-            const diasDiferenca = Math.ceil(diferencaMs / (1000 * 60 * 60 * 24));
-            
-            if (dataItem <= hoje && diasDiferenca <= 20) {
-                rocadasExecutadas++;
-            } else if (dataItem > hoje) {
-                rocadasProgramadas++;
+    const corAlerta = useMemo(() => {
+        const scoreNum = parseInt(situacaoAtual.score, 10) || 0;
+        if (scoreNum >= 75 || situacaoAtual.status.toUpperCase() === 'CRÍTICO') return '#FF1453';
+        if (scoreNum >= 40) return '#FFEA00';
+        return '#00E676';
+    }, [situacaoAtual]);
+
+    const metricas = useMemo(() => {
+        let n1 = 0, n2 = 0, n3 = 0;
+        detalhesKms.forEach(item => {
+            if (item.nivel === 1) n1++;
+            else if (item.nivel === 2) n2++;
+            else if (item.nivel === 3) n3++;
+        });
+
+        let exec = 0, prog = 0;
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+
+        cronogramasDB?.forEach(item => {
+            if (!item?.local || !item?.data) return;
+
+            if (usuario?.equipe && item?.equipe) {
+                const equipeUsuario = usuario.equipe.trim().toLowerCase();
+                const equipeItem = item.equipe.trim().toLowerCase();
+                if (equipeItem !== equipeUsuario) return;
             }
-        }
-    });
+
+            const localNormalizado = item.local.replace(/\s+/g, '').toLowerCase();
+            const rodoviaNormalizada = dadosRodovia.rodovia.replace(/\s+/g, '').toLowerCase();
+
+            if (localNormalizado === rodoviaNormalizada) {
+                const [dia, mes, ano] = item.data.split('/');
+                const anoCompleto = ano ? (ano.length === 2 ? `20${ano}` : ano) : hoje.getFullYear();
+                const dataItem = new Date(parseInt(anoCompleto, 10), parseInt(mes, 10) - 1, parseInt(dia, 10));
+
+                if (dataItem <= hoje) exec++;
+                else prog++;
+            }
+        });
+
+        return { n1, n2, n3, exec, prog };
+    }, [detalhesKms, dadosRodovia.rodovia, usuario?.equipe]);
 
     return (
-        <SafeAreaView style={styles.conteiner}>
+        <View style={[styles.container, { paddingTop: Platform.OS === 'ios' ? insets.top : 0 }]}>
+            <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
             <Header />
 
-            <ScrollView contentContainerStyle={styles.conteudoRolavel} showsVerticalScrollIndicator={false}>
-                
-                <View style={styles.cartao}>
-                    <View style={styles.linhaCabecalhoCartao}>
+            <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+
+                <View style={styles.cardHeader}>
+                    <View style={styles.headerTopRow}>
                         <View>
-                            <Text style={styles.tituloRosa}>SITUAÇÃO ATUAL</Text>
-                            <Text style={styles.subtituloCinza}>{dadosRodovia.rodovia}</Text>
+                            <Text style={styles.labelStatus}>SITUAÇÃO ATUAL</Text>
+                            <Text style={styles.nomeRodovia}>{dadosRodovia.rodovia}</Text>
                         </View>
-                        
-                        <View style={[styles.etiquetaStatus, { backgroundColor: situacaoAtual.corStatus }]}>
-                            <Text style={[styles.textoStatus, { color: situacaoAtual.corTextoStatus }]}>
-                                {situacaoAtual.status}
-                            </Text>
+                        <View style={[styles.badgeAtencao, { backgroundColor: corAlerta }]}>
+                            <Ionicons name="warning" size={14} color="#000" style={{ marginRight: 4 }} />
+                            <Text style={styles.badgeText}>{situacaoAtual.status}</Text>
                         </View>
                     </View>
 
-                    <View style={styles.conteinerPontuacao}>
-                        <View style={[styles.circuloPontuacao, { borderColor: '#FFEA00' }]}>
-                            <Text style={styles.numeroPontuacao}>{situacaoAtual.score}</Text>
-                            <Text style={styles.rotuloPontuacao}>SCORE</Text>
+                    <View style={styles.scoreWrapper}>
+                        <View style={[styles.scoreCircle, { borderColor: corAlerta }]}>
+                            <Text style={styles.scoreNumber}>{situacaoAtual.score}</Text>
+                            <Text style={[styles.scoreLabel, { color: corAlerta }]}>SCORE IA</Text>
                         </View>
                     </View>
                 </View>
 
-                <View style={styles.cartao}>
-                    <Text style={styles.tituloCinza}>Condições por Quilômetro</Text>
-                    
-                    <View style={styles.conteinerBarraProgresso}>
-                        <View style={[styles.segmentoProgresso, { backgroundColor: cond.nivel1.cor, flex: cond.nivel1.quantidadeKm }]} />
-                        <View style={[styles.segmentoProgresso, { backgroundColor: cond.nivel2.cor, flex: cond.nivel2.quantidadeKm }]} />
-                        <View style={[styles.segmentoProgresso, { backgroundColor: cond.nivel3.cor, flex: cond.nivel3.quantidadeKm }]} />
+                <TouchableOpacity
+                    style={styles.cardSection}
+                    activeOpacity={0.7}
+                    onPress={() => router.push('/detalhes-rodovia')} 
+                >
+                    <View style={styles.rowTitleIcon}>
+                        <Text style={styles.sectionTitle}>Condições por Quilômetro</Text>
+                        <Ionicons name="chevron-forward" size={20} color="#94A3B8" />
                     </View>
 
-                    <View style={styles.conteinerLegenda}>
-                        {[cond.nivel3, cond.nivel2, cond.nivel1].map((nivel, index) => (
-                            <View key={index} style={styles.linhaLegenda}>
-                                <View style={[styles.quadradoLegenda, { backgroundColor: nivel.cor }]} />
-                                <Text style={styles.textoLegenda}>
-                                    {nivel.descricao} {nivel.quantidadeKm} KM
-                                </Text>
-                            </View>
-                        ))}
+                    <View style={styles.progressBar}>
+                        <View style={[styles.progressSegment, { backgroundColor: '#00E676', flex: metricas.n1 || 1 }]} />
+                        <View style={[styles.progressSegment, { backgroundColor: '#FFEA00', flex: metricas.n2 || 1 }]} />
+                        <View style={[styles.progressSegment, { backgroundColor: '#FF1453', flex: metricas.n3 || 1 }]} />
                     </View>
+
+                    <View style={styles.legendContainer}>
+                        <View style={styles.legendItem}>
+                            <View style={[styles.dot, { backgroundColor: '#FF1453' }]} />
+                            <Text style={styles.legendText}>Nível 3 (&gt;30cm): <Text style={styles.boldText}>{metricas.n3} KM</Text></Text>
+                        </View>
+                        <View style={styles.legendItem}>
+                            <View style={[styles.dot, { backgroundColor: '#FFEA00' }]} />
+                            <Text style={styles.legendText}>Nível 2 (10-20cm): <Text style={styles.boldText}>{metricas.n2} KM</Text></Text>
+                        </View>
+                        <View style={styles.legendItem}>
+                            <View style={[styles.dot, { backgroundColor: '#00E676' }]} />
+                            <Text style={styles.legendText}>Nível 1 (&lt;10cm): <Text style={styles.boldText}>{metricas.n1} KM</Text></Text>
+                        </View>
+                    </View>
+                </TouchableOpacity>
+
+                <View style={styles.gridContainer}>
+                    <TouchableOpacity style={styles.metricCard} activeOpacity={0.8}>
+                        <View style={styles.iconCircleRoxo}>
+                            <Ionicons name="checkmark-done" size={20} color="#612BFF" />
+                        </View>
+                        <Text style={styles.metricValueRoxo}>{metricas.exec}</Text>
+                        <Text style={styles.metricLabel}>Executadas</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.metricCard} activeOpacity={0.8}>
+                        <View style={styles.iconCircleCinza}>
+                            <Ionicons name="time-outline" size={20} color="#475569" />
+                        </View>
+                        <Text style={styles.metricValueCinza}>{metricas.prog}</Text>
+                        <Text style={styles.metricLabel}>Programadas</Text>
+                    </TouchableOpacity>
                 </View>
 
-                <View style={styles.linhaCartoesInferiores}>
-                    
-                    <View style={[styles.cartao, styles.meioCartao]}>
-                        <Text style={styles.tituloPequenoRosa}>Roçadas (Últimos 7 dias)</Text>
-                        
-                        <View style={styles.caixaInterna}>
-                            <Text style={styles.rotuloCaixaInterna}>Executadas</Text>
-                            <Text style={styles.valorCaixaInternaRoxo}>{rocadasExecutadas}</Text>
+                <TouchableOpacity style={styles.equipesCard} activeOpacity={0.9}>
+                    <View style={styles.equipesRow}>
+                        <View style={styles.iconCircleVerde}>
+                            <FontAwesome5 name="users" size={18} color="#15803D" />
                         </View>
-
-                        <View style={styles.caixaInterna}>
-                            <Text style={styles.rotuloCaixaInterna}>Programadas</Text>
-                            <Text style={styles.valorCaixaInternaCinza}>{rocadasProgramadas}</Text>
+                        <View style={{ marginLeft: 12 }}>
+                            <Text style={styles.equipesLabel}>Equipes Disponíveis em Campo</Text>
+                            <Text style={styles.equipesValue}>{equipes.disponiveis} Equipes Ativas</Text>
                         </View>
                     </View>
-
-                    <View style={[styles.cartao, styles.meioCartao]}>
-                        <Text style={styles.tituloPequenoRosa}>Equipes</Text>
-                        
-                        <View style={[styles.caixaInterna, { marginTop: 45 }]}>
-                            <Text style={styles.rotuloCaixaInterna}>Equipes Disponíveis</Text>
-                            <Text style={styles.valorCaixaInternaVerde}>{equipes.disponiveis}</Text>
-                        </View>
-                    </View>
-
-                </View>
+                </TouchableOpacity>
 
             </ScrollView>
-        </SafeAreaView>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
-    conteiner: {
+    container: {
         flex: 1,
-        backgroundColor: '#F6F6FC',
+        backgroundColor: '#F8FAFC',
     },
-    conteudoRolavel: {
+    scrollContent: {
+        padding: 16,
+        paddingBottom: 30,
+    },
+    cardHeader: {
+        backgroundColor: '#612BFF',
+        borderRadius: 20,
         padding: 20,
-        paddingBottom: 40,
+        marginBottom: 16,
+        elevation: 6,
+        shadowColor: '#612BFF',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
+        shadowRadius: 8,
     },
-    cartao: {
-        backgroundColor: '#FFFFFF',
-        borderRadius: 12,
-        padding: 20,
-        marginBottom: 15,
-        borderWidth: 1,
-        borderColor: '#EAEAEA',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 5,
-        elevation: 2,
-    },
-    linhaCabecalhoCartao: {
+    headerTopRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
     },
-    tituloRosa: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#FF1453',
+    labelStatus: {
+        color: '#D3C4FF',
+        fontSize: 12,
+        fontWeight: '700',
+        letterSpacing: 0.5,
     },
-    subtituloCinza: {
-        fontSize: 14,
-        color: '#A0A0A0',
-        fontWeight: '600',
+    nomeRodovia: {
+        color: '#FFFFFF',
+        fontSize: 24,
+        fontWeight: 'bold',
         marginTop: 2,
     },
-    etiquetaStatus: {
-        paddingHorizontal: 15,
+    badgeAtencao: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 12,
         paddingVertical: 6,
         borderRadius: 20,
     },
-    textoStatus: {
+    badgeText: {
+        color: '#000000',
         fontWeight: 'bold',
-        fontSize: 14,
+        fontSize: 12,
+        textTransform: 'uppercase',
     },
-    conteinerPontuacao: {
+    scoreWrapper: {
         alignItems: 'center',
-        marginTop: 20,
-        marginBottom: 10,
+        marginTop: 15,
     },
-    circuloPontuacao: {
-        width: 120,
-        height: 120,
-        borderRadius: 60,
-        borderWidth: 14, 
+    scoreCircle: {
+        width: 110,
+        height: 110,
+        borderRadius: 55,
+        borderWidth: 8,
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
         justifyContent: 'center',
         alignItems: 'center',
     },
-    numeroPontuacao: {
-        fontSize: 28,
+    scoreNumber: {
+        color: '#FFFFFF',
+        fontSize: 38,
         fontWeight: 'bold',
-        color: '#000000',
+        lineHeight: 42,
     },
-    rotuloPontuacao: {
-        fontSize: 12,
-        fontWeight: 'bold',
-        color: '#000000',
-        marginTop: -2,
+    scoreLabel: {
+        fontSize: 10,
+        fontWeight: '800',
+        letterSpacing: 1,
     },
-    tituloCinza: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#8A8A8A',
-        marginBottom: 15,
+    cardSection: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 16,
+        padding: 18,
+        marginBottom: 16,
+        borderWidth: 1,
+        borderColor: '#E2E8F0',
     },
-    conteinerBarraProgresso: {
-        height: 22,
-        borderRadius: 11,
-        flexDirection: 'row',
-        overflow: 'hidden',
-        marginBottom: 15,
-    },
-    segmentoProgresso: {
-        height: '100%',
-    },
-    conteinerLegenda: {
-        marginTop: 5,
-    },
-    linhaLegenda: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 8,
-    },
-    quadradoLegenda: {
-        width: 16,
-        height: 16,
-        borderRadius: 4,
-        marginRight: 10,
-    },
-    textoLegenda: {
-        fontSize: 15,
-        fontWeight: 'bold',
-        color: '#8A8A8A',
-    },
-    linhaCartoesInferiores: {
+    rowTitleIcon: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        gap: 15, 
+        alignItems: 'center',
+        marginBottom: 14,
     },
-    meioCartao: {
-        flex: 1, 
-        padding: 15,
+    sectionTitle: {
+        fontSize: 15,
+        fontWeight: '700',
+        color: '#1E293B',
     },
-    tituloPequenoRosa: {
+    progressBar: {
+        height: 14,
+        borderRadius: 7,
+        flexDirection: 'row',
+        overflow: 'hidden',
+        marginBottom: 16,
+        backgroundColor: '#F1F5F9',
+    },
+    progressSegment: {
+        height: '100%',
+    },
+    legendContainer: {
+        gap: 10,
+    },
+    legendItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    dot: {
+        width: 12,
+        height: 12,
+        borderRadius: 6,
+        marginRight: 10,
+    },
+    legendText: {
         fontSize: 13,
-        fontWeight: 'bold',
-        color: '#FF1453',
-        marginBottom: 15,
+        color: '#475569',
     },
-    caixaInterna: {
-        backgroundColor: '#F4EBFF', 
-        borderRadius: 8,
-        padding: 15,
+    boldText: {
+        fontWeight: 'bold',
+        color: '#0F172A',
+    },
+    gridContainer: {
+        flexDirection: 'row',
+        gap: 12,
+        marginBottom: 12,
+    },
+    metricCard: {
+        flex: 1,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 16,
+        padding: 16,
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#E2E8F0',
+    },
+    iconCircleRoxo: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: '#F3E8FF',
+        justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 10,
-        borderWidth: 1,
-        borderColor: '#E6D9FF',
     },
-    rotuloCaixaInterna: {
+    iconCircleCinza: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: '#F1F5F9',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    metricValueRoxo: {
+        fontSize: 26,
+        fontWeight: 'bold',
+        color: '#612BFF',
+    },
+    metricValueCinza: {
+        fontSize: 26,
+        fontWeight: 'bold',
+        color: '#475569',
+    },
+    metricLabel: {
         fontSize: 12,
-        fontWeight: 'bold',
-        color: '#000000',
-        marginBottom: 5,
-        textAlign: 'center',
+        fontWeight: '600',
+        color: '#64748B',
+        marginTop: 2,
     },
-    valorCaixaInternaRoxo: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        color: '#612BFF', 
+    equipesCard: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 16,
+        padding: 16,
+        borderWidth: 1,
+        borderColor: '#E2E8F0',
     },
-    valorCaixaInternaCinza: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        color: '#8A8A8A', 
+    equipesRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
-    valorCaixaInternaVerde: {
-        fontSize: 22,
+    iconCircleVerde: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        backgroundColor: '#DCFCE7',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    equipesLabel: {
+        fontSize: 12,
+        color: '#64748B',
+        fontWeight: '600',
+    },
+    equipesValue: {
+        fontSize: 16,
         fontWeight: 'bold',
-        color: '#00E676', 
-    }
+        color: '#15803D',
+        marginTop: 2,
+    },
 });

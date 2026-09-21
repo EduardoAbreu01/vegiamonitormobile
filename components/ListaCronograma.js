@@ -1,22 +1,15 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
-import { useAuth } from '../context/AuthContext'; 
 
 export default function ListaCronograma({ dados }) {
-    const { usuario } = useAuth();
-
-   
-    const dadosFiltrados = (dados || []).filter(
-        (item) => item.equipe === usuario?.equipe
-    );
 
     const getIndicadorColor = (dataString) => {
         if (!dataString) return '#FF1453'; 
 
-        const [diaStr,mesStr] = dataString.split('/');
+        const [diaStr, mesStr] = dataString.split('/');
         const anoAtual = new Date().getFullYear();
         
-        const dataItem = new Date(anoAtual, parseInt(mesStr) - 1, parseInt(diaStr));
+        const dataItem = new Date(anoAtual, parseInt(mesStr, 10) - 1, parseInt(diaStr, 10));
         
         const hoje = new Date();
         hoje.setHours(0, 0, 0, 0);
@@ -34,7 +27,7 @@ export default function ListaCronograma({ dados }) {
     };
 
     const renderItem = ({ item }) => {
-        const [diaStr,mesStr] = item.data.split('/');
+        const [diaStr, mesStr] = item.data.split('/');
         
         return (
             <View style={styles.cardContainer}>
@@ -42,7 +35,7 @@ export default function ListaCronograma({ dados }) {
                 
                 <View style={styles.dataContainer}>
                     <Text style={styles.diaTexto}>{item.dia}</Text>
-                    <Text style={styles.dataTexto}>{diaStr+'/'+mesStr}</Text>
+                    <Text style={styles.dataTexto}>{diaStr + '/' + mesStr}</Text>
                 </View>
 
                 <View style={styles.divisorVertical} />
@@ -63,8 +56,8 @@ export default function ListaCronograma({ dados }) {
 
     return (
         <FlatList
-            data={dadosFiltrados}
-            keyExtractor={(item) => item.id}
+            data={dados}
+            keyExtractor={(item) => String(item.id)}
             renderItem={renderItem}
             contentContainerStyle={styles.listaContainer}
             showsVerticalScrollIndicator={false}
@@ -77,6 +70,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 10,
         backgroundColor: '#F6F6FC', 
+        paddingBottom: 30,
     },
     cardContainer: {
         flexDirection: 'row',
@@ -108,6 +102,7 @@ const styles = StyleSheet.create({
         fontSize: 22,
         fontWeight: 'bold',
         color: '#000000',
+        textTransform: 'capitalize',
     },
     dataTexto: {
         fontSize: 11,

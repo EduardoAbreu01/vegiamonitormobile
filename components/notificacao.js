@@ -3,20 +3,34 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function NotificacaoCard({ notificacao }) {
+    // Cor de destaque (usa o Roxo oficial como fallback)
+    const cardColor = notificacao.color || '#612BFF';
+
     return (
-        <View style={[styles.cartao, { borderTopColor: notificacao.color }]}>
+        <View style={styles.cartao}>
             
-            <View style={styles.conteinerIcone}>
+            {/* Ícone com fundo suave baseado na cor da notificação */}
+            <View style={[styles.iconWrapper, { backgroundColor: `${cardColor}1A` }]}>
                 <Ionicons 
-                    name={notificacao.icone} 
-                    size={40} 
-                    color={notificacao.color} 
+                    name={notificacao.icone || 'notifications-outline'} 
+                    size={22} 
+                    color={cardColor} 
                 />
             </View>
+
             <View style={styles.conteudoCartao}>
-                <Text style={styles.tituloCartao}>{notificacao.titulo}</Text>
-                <Text style={styles.descricaoCartao}>{notificacao.descricao}</Text>
-                <Text style={styles.dataHoraCartao}>{notificacao.data} {notificacao.hora}</Text>
+                <View style={styles.headerCartao}>
+                    <Text style={styles.tituloCartao} numberOfLines={1}>
+                        {notificacao.titulo}
+                    </Text>
+                    <Text style={styles.dataHoraCartao}>
+                        {notificacao.data} • {notificacao.hora}
+                    </Text>
+                </View>
+
+                <Text style={styles.descricaoCartao}>
+                    {notificacao.descricao}
+                </Text>
             </View>
 
         </View>
@@ -27,40 +41,51 @@ const styles = StyleSheet.create({
     cartao: {
         backgroundColor: '#FFFFFF',
         flexDirection: 'row',
-        borderRadius: 12,
-        padding: 15,
-        marginBottom: 15,
-        borderTopWidth: 4, 
+        borderRadius: 16, // Bordas um pouco mais arredondadas (mais clean)
+        padding: 16,
+        marginBottom: 12,
         borderWidth: 1,
-        borderColor: '#EAEAEA',
-        elevation: 3,
+        borderColor: '#E2E8F0', // Borda super fina e sutil
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.04, // Sombra quase invisível, apenas para dar profundidade
+        shadowRadius: 6,
+        elevation: 1,
     },
-    conteinerIcone: {
-        width: 50,
+    iconWrapper: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 15,
-        marginTop: 5,
+        marginRight: 14,
     },
     conteudoCartao: {
         flex: 1,
         justifyContent: 'center',
     },
-    tituloCartao: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#8A8A8A', 
+    headerCartao: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         marginBottom: 4,
+    },
+    tituloCartao: {
+        fontSize: 15,
+        fontWeight: '700',
+        color: '#1E293B', // Grafite escuro, excelente legibilidade
+        flex: 1,
+        marginRight: 8,
     },
     descricaoCartao: {
         fontSize: 14,
-        fontWeight: 'bold',
-        color: '#000000',
-        marginBottom: 10,
-        lineHeight: 18,
+        fontWeight: '500',
+        color: '#475569', // Grafite médio
+        lineHeight: 20,
     },
     dataHoraCartao: {
-        fontSize: 11,
-        color: '#A0A0A0', 
+        fontSize: 12,
+        color: '#94A3B8', // Cinza claro para não roubar a atenção
         fontWeight: '600',
     }
 });
