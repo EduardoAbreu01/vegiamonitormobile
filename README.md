@@ -121,12 +121,12 @@ Abaixo estão algumas das principais telas do **VegiaMonitor**, projetadas com a
 
 | Tela de Login | Aba Cronograma | Dashboard da Rodovia |
 | :---: | :---: | :---: |
-| ![Login](./assets/login-tela.png) | ![Cronograma](./assets/cronograma-tela.png) | ![Rodovia](./assets/rodovia-tela.png) |
+| ![Login](./assets/login-print.png) | ![Cronograma](./assets/cronograma-tela.png) | ![Rodovia](./assets/rodovia-tela.png) |
 | *Autenticação segura por CPF e senha* | *Cronograma de roçadas com prazos* | *Score de IA e status da rodovia* |
 
 | Detalhamento de Trechos | Perfil do Operador | Central de Alertas |
 | :---: | :---: | :---: |
-| ![Detalhes](./assets/detalhes-tela.png) | ![Perfil](./assets/perfil-tela.jpg) | ![Notificações](./assets/notificacoes-tela.jpg) |
+| ![Detalhes](./assets/detalhes-tela.png) | ![Perfil](./assets/perfil-tela.png) | ![Notificações](./assets/notificacoes-tela.png) |
 | *Filtro de trechos críticos (KM a KM)* | *Dados operacionais e WhatsApp* | *Histórico e filtros de avisos* |
 
 ## 📱 Protótipo Figma
