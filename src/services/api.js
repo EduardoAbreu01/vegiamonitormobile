@@ -1,24 +1,27 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Utiliza a variável do .env e usa a URL do Render como fallback
 export const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://vegiamonitor-backend.onrender.com';
 
-export async function apiFetch(endpoint, options = {}) {
-    const token = await AsyncStorage.getItem('userToken');
+const PREFIXO_CACHE = '@VegiaCache:';
 
-    // Identifica se o corpo é um FormData (upload de imagens/arquivos)
+export async function apiFetch(endpoint, options = {}) {
+    const method = (options.method || 'GET').toUpperCase();
+    const cacheKey = `${PREFIXO_CACHE}${endpoint}`;
+
+    // Recupera o token de autenticação
+    const usuarioSalvo = await AsyncStorage.getItem('@VegiaMonitor:usuario');
+    const token = usuarioSalvo ? JSON.parse(usuarioSalvo).token : null;
+
     const isFormData = options.body instanceof FormData;
 
     const defaultHeaders = {
-        // Se for FormData, não define Content-Type (o Fetch gerencia o boundary)
         ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
         'Accept': 'application/json',
         ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
     };
 
-    // Configuração de Timeout (ex: 30 segundos para cobrir cold start do Render)
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000);
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s de timeout
 
     const config = {
         ...options,
@@ -36,18 +39,38 @@ export async function apiFetch(endpoint, options = {}) {
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
             const err = new Error(errorData.mensagem || errorData.message || `Erro HTTP ${response.status}`);
-            err.status = response.status; // Anexa o código HTTP ao erro
+            err.status = response.status;
             throw err;
         }
 
         if (response.status === 204) return null;
 
-        return await response.json();
+        const data = await response.json();
+
+        // Se a requisição GET for bem-sucedida, atualiza o cache local
+        if (method === 'GET') {
+            await AsyncStorage.setItem(cacheKey, JSON.stringify(data));
+        }
+
+        return data;
     } catch (error) {
         clearTimeout(timeoutId);
 
+        // Se for uma requisição de leitura (GET) e falhar por falta de rede/timeout, tenta recuperar do cache
+        if (method === 'GET') {
+            const cachedData = await AsyncStorage.getItem(cacheKey);
+            if (cachedData !== null) {
+                console.log(`[OFFLINE] Servindo dados em cache para: ${endpoint}`);
+                return JSON.parse(cachedData);
+            }
+        }
+
         if (error.name === 'AbortError') {
-            throw new Error('A conexão demorou muito para responder. Tente novamente.');
+            const cachedData = await AsyncStorage.getItem(cacheKey);
+            if (method === 'GET' && cachedData !== null) {
+                return JSON.parse(cachedData);
+            }
+            throw new Error('A conexão demorou muito para responder.');
         }
 
         console.error(`Erro no pedido [${endpoint}]:`, error);
