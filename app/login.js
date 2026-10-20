@@ -12,7 +12,8 @@ import {
     Platform,
     KeyboardAvoidingView,
     TouchableWithoutFeedback,
-    Keyboard
+    Keyboard,
+    ActivityIndicator
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
@@ -23,11 +24,11 @@ export default function LoginScreen() {
     const [senha, setSenha] = useState('');
     const [mostrarSenha, setMostrarSenha] = useState(false);
 
-    const { login, erro } = useAuth(); 
+    const { login, erro, carregando } = useAuth(); 
 
-    const handleSubmeter = () => {
-        const sucesso = login(cpf, senha);
-        if (sucesso){
+    const handleSubmeter = async () => {
+        const sucesso = await login(cpf, senha);
+        if (sucesso) {
             router.replace('/cronograma');
         }
     };
@@ -70,6 +71,7 @@ export default function LoginScreen() {
                                     keyboardType="numeric"
                                     value={cpf}
                                     onChangeText={setCpf}
+                                    editable={!carregando}
                                 />
                             </View>
                     
@@ -83,10 +85,12 @@ export default function LoginScreen() {
                                     secureTextEntry={!mostrarSenha}
                                     value={senha}
                                     onChangeText={setSenha}
+                                    editable={!carregando}
                                 />
                                 <TouchableOpacity 
                                     style={styles.eyeIcon} 
                                     onPress={() => setMostrarSenha(!mostrarSenha)}
+                                    disabled={carregando}
                                 >
                                     <Feather name={mostrarSenha ? "eye" : "eye-off"} size={20} color="#64748B" />
                                 </TouchableOpacity>
@@ -100,11 +104,16 @@ export default function LoginScreen() {
                             ) : null}
 
                             <TouchableOpacity 
-                                style={styles.button} 
+                                style={[styles.button, carregando && styles.buttonDisabled]} 
                                 activeOpacity={0.85} 
                                 onPress={handleSubmeter}
+                                disabled={carregando}
                             >
-                                <Text style={styles.buttonText}>Acessar Sistema</Text>
+                                {carregando ? (
+                                    <ActivityIndicator size="small" color="#FFFFFF" />
+                                ) : (
+                                    <Text style={styles.buttonText}>Acessar Sistema</Text>
+                                )}
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -232,6 +241,9 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
         shadowRadius: 8,
+    },
+    buttonDisabled: {
+        opacity: 0.7,
     },
     buttonText: {
         color: '#FFFFFF',

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
     View, 
     Text, 
@@ -7,23 +7,58 @@ import {
     TouchableOpacity, 
     StatusBar, 
     Platform,
-    ScrollView 
+    ScrollView,
+    ActivityIndicator,
+    RefreshControl
 } from 'react-native';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import notificacoesDB from '../data/notificacoes.json';
 import NotificacaoCard from '../components/notificacao.js';
+import { apiFetch } from '../src/services/api';
 
 export default function NotificacoesScreen() {    
     const insets = useSafeAreaInsets();
     
+    // Estados de dados e requisição
+    const [notificacoes, setNotificacoes] = useState([]);
+    const [carregando, setCarregando] = useState(true);
+    const [recarregando, setRecarregando] = useState(false);
+    const [erro, setErro] = useState('');
+
+    // Estados de filtros da tela
     const [filtroTempo, setFiltroTempo] = useState('all'); 
     const [filtroCor, setFiltroCor] = useState('all'); 
 
+    // Função de busca na API
+    const buscarNotificacoes = useCallback(async (isRefresh = false) => {
+        if (isRefresh) {
+            setRecarregando(true);
+        } else {
+            setCarregando(true);
+        }
+        setErro('');
+
+        try {
+            const dados = await apiFetch('/notificacoes');
+            setNotificacoes(Array.isArray(dados) ? dados : []);
+        } catch (err) {
+            console.error('Erro ao carregar notificações:', err);
+            setErro('Não foi possível carregar os alertas.');
+        } finally {
+            setCarregando(false);
+            setRecarregando(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        buscarNotificacoes();
+    }, [buscarNotificacoes]);
+
+    // Aplicação dos filtros com ordenação por data
     const notificacoesFiltradas = useMemo(() => {
-        let lista = [...notificacoesDB];
+        let lista = [...notificacoes];
         const hoje = new Date(); 
 
         lista = lista.map(item => {
@@ -32,7 +67,13 @@ export default function NotificacoesScreen() {
             const [dia, mes] = item.data.split('/');
             const [hora, min] = (item.hora || '00:00').split(':');
             
-            const itemDate = new Date(hoje.getFullYear(), parseInt(mes, 10) - 1, parseInt(dia, 10), parseInt(hora, 10), parseInt(min, 10));
+            const itemDate = new Date(
+                hoje.getFullYear(), 
+                parseInt(mes, 10) - 1, 
+                parseInt(dia, 10), 
+                parseInt(hora, 10), 
+                parseInt(min, 10)
+            );
             return { ...item, parsedDate: itemDate };
         });
 
@@ -52,7 +93,7 @@ export default function NotificacoesScreen() {
         }
 
         return lista;
-    }, [filtroTempo, filtroCor]);
+    }, [notificacoes, filtroTempo, filtroCor]);
 
     const coresDisponiveis = [
         { hex: '#FF1453', label: 'Urgente' },
@@ -77,7 +118,9 @@ export default function NotificacoesScreen() {
                 <View style={styles.conteinerIdentificacao}>
                     <View style={styles.textosCabecalho}>
                         <Text style={styles.tituloCabecalho}>Central de Alertas</Text>
-                        <Text style={styles.subtituloCabecalho}>{notificacoesFiltradas.length} notificações encontradas</Text>
+                        <Text style={styles.subtituloCabecalho}>
+                            {carregando ? 'Buscando...' : `${notificacoesFiltradas.length} notificações encontradas`}
+                        </Text>
                     </View>
                 </View>
             </View>
@@ -132,22 +175,54 @@ export default function NotificacoesScreen() {
                 </ScrollView>
             </View>
 
-            <FlatList
-                data={notificacoesFiltradas}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => <NotificacaoCard notificacao={item} />}
-                contentContainerStyle={styles.listaNotificacoes}
-                showsVerticalScrollIndicator={false}
-                ListEmptyComponent={
-                    <View style={styles.estadoVazio}>
-                        <Ionicons name="notifications-off-outline" size={48} color="#94A3B8" />
-                        <Text style={styles.textoEstadoVazio}>Nenhum alerta encontrado para este filtro.</Text>
-                        <TouchableOpacity style={styles.botaoLimparFiltros} onPress={() => { setFiltroTempo('all'); setFiltroCor('all'); }}>
-                            <Text style={styles.textoBotaoLimpar}>Limpar Filtros</Text>
-                        </TouchableOpacity>
-                    </View>
-                }
-            />
+            {carregando ? (
+                <View style={styles.estadoVazio}>
+                    <ActivityIndicator size="large" color="#612BFF" />
+                </View>
+            ) : (
+                <FlatList
+                    data={notificacoesFiltradas}
+                    keyExtractor={(item) => item.id.toString()}
+                    renderItem={({ item }) => <NotificacaoCard notificacao={item} />}
+                    contentContainerStyle={styles.listaNotificacoes}
+                    showsVerticalScrollIndicator={false}
+                    refreshControl={
+                        <RefreshControl 
+                            refreshing={recarregando} 
+                            onRefresh={() => buscarNotificacoes(true)}
+                            colors={['#612BFF']}
+                            tintColor="#612BFF"
+                        />
+                    }
+                    ListEmptyComponent={
+                        <View style={styles.estadoVazio}>
+                            <Ionicons 
+                                name={erro ? "alert-circle-outline" : "notifications-off-outline"} 
+                                size={48} 
+                                color="#94A3B8" 
+                            />
+                            <Text style={styles.textoEstadoVazio}>
+                                {erro || 'Nenhum alerta encontrado para este filtro.'}
+                            </Text>
+                            <TouchableOpacity 
+                                style={styles.botaoLimparFiltros} 
+                                onPress={() => { 
+                                    if (erro) {
+                                        buscarNotificacoes();
+                                    } else {
+                                        setFiltroTempo('all'); 
+                                        setFiltroCor('all'); 
+                                    }
+                                }}
+                            >
+                                <Text style={styles.textoBotaoLimpar}>
+                                    {erro ? 'Tentar Novamente' : 'Limpar Filtros'}
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    }
+                />
+            )}
         </View>
     );
 }
@@ -244,7 +319,7 @@ const styles = StyleSheet.create({
         width: 20,
         height: 20,
         borderRadius: 10,
-        justifyContent: 'center',
+        justifycontent: 'center',
         alignItems: 'center',
         marginRight: 6,
         borderWidth: 1,

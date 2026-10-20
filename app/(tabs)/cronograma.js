@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
   StyleSheet, 
   View, 
@@ -7,46 +7,95 @@ import {
   TouchableOpacity, 
   TouchableWithoutFeedback,
   StatusBar,
-  Platform
+  Platform,
+  ActivityIndicator
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons, Feather } from '@expo/vector-icons';
 
 import Header from "../../components/header";
 import ListaCronograma from '../../components/ListaCronograma';
-import rocadasDB from '../../data/rocadas.json';
 import { useAuth } from "../../context/AuthContext"; 
+import { apiFetch } from "../../src/services/api"; 
 
 export default function CronogramaScreen() {
   const [infoVisible, setInfoVisible] = useState(false);
+  const [listaRocadas, setListaRocadas] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const [recarregando, setRecarregando] = useState(false);
+  const [erro, setErro] = useState('');
+
   const insets = useSafeAreaInsets();
   const { usuario } = useAuth();
 
+  // Função para buscar dados do backend
+  const buscarRocadas = useCallback(async (isRefresh = false) => {
+    if (isRefresh) {
+      setRecarregando(true);
+    } else {
+      setCarregando(true);
+    }
+    setErro('');
+
+    try {
+      const dados = await apiFetch('/rocadas');
+      setListaRocadas(Array.isArray(dados) ? dados : []);
+    } catch (err) {
+      console.error('Erro ao buscar cronograma de roçadas:', err);
+      setErro('Não foi possível carregar o cronograma.');
+    } finally {
+      setCarregando(false);
+      setRecarregando(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    buscarRocadas();
+  }, [buscarRocadas]);
+
+  // Marca a roçada como concluída no estado local
+  const handleConcluirRocada = (id) => {
+    setListaRocadas(prev => 
+      prev.map(item => 
+        item.id === id ? { ...item, status: 'Concluído' } : item
+      )
+    );
+  };
+
+  // Filtra as roçadas pendentes para a equipe do usuário
   const proximasRocadas = useMemo(() => {
-    return rocadasDB.filter(item => {
+    return listaRocadas.filter(item => {
       if (!item?.data) return false;
 
-      // Filtra os itens de acordo com a equipe do colaborador logado
       if (usuario?.equipe && item?.equipe) {
         const equipeUsuario = usuario.equipe.trim().toLowerCase();
         const equipeItem = item.equipe.trim().toLowerCase();
         if (equipeItem !== equipeUsuario) return false;
       }
 
-      // Oculta itens já marcados como Concluído
-      if (item?.status && item.status.toLowerCase() === 'concluído') {
-        return false;
+      if (item?.status) {
+        const statusLimpo = item.status
+          .trim()
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '');
+
+        const statusFinalizados = ['concluido', 'concluida', 'executado', 'executada', 'finalizado', 'finalizada'];
+        if (statusFinalizados.includes(statusLimpo)) {
+          return false;
+        }
       }
 
       return true;
     });
-  }, [usuario]);
+  }, [usuario, listaRocadas]);
 
   return (
     <View style={[styles.containerPrincipal, { paddingTop: Platform.OS === 'ios' ? insets.top : 0 }]}>
       <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
 
       <Header />
+
       <View style={styles.controlPanel}>
         <View style={styles.titleWrapper}>
           <View style={styles.iconContainer}>
@@ -55,7 +104,7 @@ export default function CronogramaScreen() {
           <View>
             <Text style={styles.tituloSecao}>Cronograma Atual</Text>
             <Text style={styles.subtituloSecao}>
-              {proximasRocadas.length} {proximasRocadas.length === 1 ? 'atividade pendente' : 'atividades pendentes'}
+              {carregando ? 'Carregando...' : `${proximasRocadas.length} ${proximasRocadas.length === 1 ? 'atividade pendente' : 'atividades pendentes'}`}
             </Text>
           </View>
         </View>
@@ -70,7 +119,20 @@ export default function CronogramaScreen() {
       </View>
 
       <View style={styles.content}>
-        <ListaCronograma dados={proximasRocadas} />
+        {carregando ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#612BFF" />
+          </View>
+        ) : (
+          <ListaCronograma 
+            dados={proximasRocadas} 
+            onConcluir={handleConcluirRocada}
+            recarregando={recarregando}
+            onRefresh={() => buscarRocadas(true)}
+            erro={erro}
+            onRetry={() => buscarRocadas()}
+          />
+        )}
       </View>
 
       <Modal
@@ -189,7 +251,12 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: 16,
+    backgroundColor: '#F8FAFC',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   modalBackdrop: {
     flex: 1,

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
     View,
     Text,
@@ -6,33 +6,72 @@ import {
     ScrollView,
     StatusBar,
     Platform,
-    TouchableOpacity
+    TouchableOpacity,
+    ActivityIndicator,
+    RefreshControl
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { router } from 'expo-router'; 
 import Header from '../../components/header';
 
-import rodoviasDB from '../../data/rodovias.json';
-import cronogramasDB from '../../data/rocadas.json';
 import { useAuth } from '../../context/AuthContext';
+import { apiFetch } from '../../src/services/api'; 
 
 export default function RodoviaScreen() {
     const insets = useSafeAreaInsets();
     const { usuario } = useAuth(); 
 
-    const dadosRodovia = rodoviasDB?.[0] || {
+    const [dadosRodovia, setDadosRodovia] = useState(null);
+    const [cronogramas, setCronogramas] = useState([]);
+    const [carregando, setCarregando] = useState(true);
+    const [recarregando, setRecarregando] = useState(false);
+    const [erro, setErro] = useState('');
+
+    const buscarDados = useCallback(async (isRefresh = false) => {
+        if (isRefresh) {
+            setRecarregando(true);
+        } else {
+            setCarregando(true);
+        }
+        setErro('');
+
+        try {
+            // Busca dados de rodovias e cronograma simultaneamente
+            const [rodoviasRes, rocadasRes] = await Promise.all([
+                apiFetch('/rodovias'),
+                apiFetch('/rocadas').catch(() => []) // Fallback caso a rota de roçadas falhe
+            ]);
+
+            const rodoviaAtual = Array.isArray(rodoviasRes) ? rodoviasRes[0] : rodoviasRes;
+            setDadosRodovia(rodoviaAtual || null);
+            setCronogramas(Array.isArray(rocadasRes) ? rocadasRes : []);
+        } catch (err) {
+            console.error('Erro ao buscar dados da rodovia:', err);
+            setErro('Não foi possível carregar as informações da rodovia.');
+        } finally {
+            setCarregando(false);
+            setRecarregando(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        buscarDados();
+    }, [buscarDados]);
+
+    const rodoviaObj = dadosRodovia || {
         rodovia: 'SP - 021',
-        situacaoAtual: { status: 'ATENÇÃO', score: '60' },
-        equipes: { disponiveis: 2 },
+        situacaoAtual: { status: 'ATENÇÃO', score: 60, corStatus: '#FFEA00' },
+        equipes: { disponiveis: 0 },
         detalhesKms: []
     };
 
-    const { situacaoAtual, equipes, detalhesKms = [] } = dadosRodovia;
+    const { situacaoAtual, equipes, detalhesKms = [] } = rodoviaObj;
 
     const corAlerta = useMemo(() => {
-        const scoreNum = parseInt(situacaoAtual.score, 10) || 0;
-        if (scoreNum >= 75 || situacaoAtual.status.toUpperCase() === 'CRÍTICO') return '#FF1453';
+        if (situacaoAtual?.corStatus) return situacaoAtual.corStatus;
+        const scoreNum = parseInt(situacaoAtual?.score, 10) || 0;
+        if (scoreNum >= 75 || situacaoAtual?.status?.toUpperCase() === 'CRÍTICO') return '#FF1453';
         if (scoreNum >= 40) return '#FFEA00';
         return '#00E676';
     }, [situacaoAtual]);
@@ -49,7 +88,7 @@ export default function RodoviaScreen() {
         const hoje = new Date();
         hoje.setHours(0, 0, 0, 0);
 
-        cronogramasDB?.forEach(item => {
+        cronogramas.forEach(item => {
             if (!item?.local || !item?.data) return;
 
             if (usuario?.equipe && item?.equipe) {
@@ -59,7 +98,7 @@ export default function RodoviaScreen() {
             }
 
             const localNormalizado = item.local.replace(/\s+/g, '').toLowerCase();
-            const rodoviaNormalizada = dadosRodovia.rodovia.replace(/\s+/g, '').toLowerCase();
+            const rodoviaNormalizada = rodoviaObj.rodovia.replace(/\s+/g, '').toLowerCase();
 
             if (localNormalizado === rodoviaNormalizada) {
                 const [dia, mes, ano] = item.data.split('/');
@@ -72,30 +111,60 @@ export default function RodoviaScreen() {
         });
 
         return { n1, n2, n3, exec, prog };
-    }, [detalhesKms, dadosRodovia.rodovia, usuario?.equipe]);
+    }, [detalhesKms, rodoviaObj.rodovia, cronogramas, usuario?.equipe]);
+
+    if (carregando) {
+        return (
+            <View style={[styles.container, styles.centerContent, { paddingTop: Platform.OS === 'ios' ? insets.top : 0 }]}>
+                <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+                <Header />
+                <ActivityIndicator size="large" color="#612BFF" style={{ marginTop: 40 }} />
+            </View>
+        );
+    }
 
     return (
         <View style={[styles.container, { paddingTop: Platform.OS === 'ios' ? insets.top : 0 }]}>
             <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
             <Header />
 
-            <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+            <ScrollView 
+                contentContainerStyle={styles.scrollContent} 
+                showsVerticalScrollIndicator={false}
+                refreshControl={
+                    <RefreshControl 
+                        refreshing={recarregando} 
+                        onRefresh={() => buscarDados(true)}
+                        colors={['#612BFF']}
+                        tintColor="#612BFF"
+                    />
+                }
+            >
+                {erro ? (
+                    <View style={styles.erroBanner}>
+                        <Ionicons name="alert-circle-outline" size={20} color="#FF1453" />
+                        <Text style={styles.erroTexto}>{erro}</Text>
+                        <TouchableOpacity style={styles.botaoRetry} onPress={() => buscarDados()}>
+                            <Text style={styles.textoRetry}>Tentar Novamente</Text>
+                        </TouchableOpacity>
+                    </View>
+                ) : null}
 
                 <View style={styles.cardHeader}>
                     <View style={styles.headerTopRow}>
                         <View>
                             <Text style={styles.labelStatus}>SITUAÇÃO ATUAL</Text>
-                            <Text style={styles.nomeRodovia}>{dadosRodovia.rodovia}</Text>
+                            <Text style={styles.nomeRodovia}>{rodoviaObj.rodovia}</Text>
                         </View>
                         <View style={[styles.badgeAtencao, { backgroundColor: corAlerta }]}>
                             <Ionicons name="warning" size={14} color="#000" style={{ marginRight: 4 }} />
-                            <Text style={styles.badgeText}>{situacaoAtual.status}</Text>
+                            <Text style={styles.badgeText}>{situacaoAtual?.status}</Text>
                         </View>
                     </View>
 
                     <View style={styles.scoreWrapper}>
                         <View style={[styles.scoreCircle, { borderColor: corAlerta }]}>
-                            <Text style={styles.scoreNumber}>{situacaoAtual.score}</Text>
+                            <Text style={styles.scoreNumber}>{situacaoAtual?.score}</Text>
                             <Text style={[styles.scoreLabel, { color: corAlerta }]}>SCORE IA</Text>
                         </View>
                     </View>
@@ -158,7 +227,7 @@ export default function RodoviaScreen() {
                         </View>
                         <View style={{ marginLeft: 12 }}>
                             <Text style={styles.equipesLabel}>Equipes Disponíveis em Campo</Text>
-                            <Text style={styles.equipesValue}>{equipes.disponiveis} Equipes Ativas</Text>
+                            <Text style={styles.equipesValue}>{equipes?.disponiveis ?? 0} Equipes Ativas</Text>
                         </View>
                     </View>
                 </TouchableOpacity>
@@ -173,9 +242,41 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#F8FAFC',
     },
+    centerContent: {
+        justifyContent: 'flex-start',
+    },
     scrollContent: {
         padding: 16,
         paddingBottom: 30,
+    },
+    erroBanner: {
+        backgroundColor: '#FFF1F2',
+        borderWidth: 1,
+        borderColor: '#FECDD3',
+        borderRadius: 12,
+        padding: 12,
+        marginBottom: 16,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    erroTexto: {
+        color: '#FF1453',
+        fontSize: 13,
+        fontWeight: '600',
+        flex: 1,
+        marginLeft: 8,
+    },
+    botaoRetry: {
+        backgroundColor: '#FF1453',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 8,
+    },
+    textoRetry: {
+        color: '#FFFFFF',
+        fontSize: 12,
+        fontWeight: 'bold',
     },
     cardHeader: {
         backgroundColor: '#612BFF',

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
     View, 
     Text, 
@@ -6,26 +6,57 @@ import {
     FlatList, 
     TouchableOpacity, 
     StatusBar, 
-    Platform 
+    Platform,
+    ActivityIndicator,
+    RefreshControl
 } from 'react-native';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import rodoviasDB from '../data/rodovias.json'; 
+import { apiFetch } from '../src/services/api'; 
 
 export default function DetalhesRodoviaScreen() {    
     const insets = useSafeAreaInsets();
 
+    const [dadosRodovia, setDadosRodovia] = useState(null);
+    const [carregando, setCarregando] = useState(true);
+    const [recarregando, setRecarregando] = useState(false);
+    const [erro, setErro] = useState('');
     const [mostrarTodos, setMostrarTodos] = useState(false);
-    
-    const dadosRodovia = rodoviasDB?.[0] || { rodovia: 'SP - 021', detalhesKms: [] };
+
+    const buscarTrechos = useCallback(async (isRefresh = false) => {
+        if (isRefresh) {
+            setRecarregando(true);
+        } else {
+            setCarregando(true);
+        }
+        setErro('');
+
+        try {
+            const dados = await apiFetch('/rodovias');
+            const rodoviaAtual = Array.isArray(dados) ? dados[0] : dados;
+            setDadosRodovia(rodoviaAtual || null);
+        } catch (err) {
+            console.error('Erro ao carregar detalhes da rodovia:', err);
+            setErro('Não foi possível obter os dados da rodovia.');
+        } finally {
+            setCarregando(false);
+            setRecarregando(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        buscarTrechos();
+    }, [buscarTrechos]);
+
+    const rodoviaObj = dadosRodovia || { rodovia: 'SP - 021', detalhesKms: [] };
     
     const { trechosOrdenados, trechosCriticos } = useMemo(() => {
-        const ordenados = [...(dadosRodovia.detalhesKms || [])].sort((a, b) => a.km - b.km);
+        const ordenados = [...(rodoviaObj.detalhesKms || [])].sort((a, b) => a.km - b.km);
         const criticos = ordenados.filter(item => item.nivel === 3);
         return { trechosOrdenados: ordenados, trechosCriticos: criticos };
-    }, [dadosRodovia]);
+    }, [rodoviaObj]);
 
     const trechosExibidos = mostrarTodos ? trechosOrdenados : trechosCriticos;
 
@@ -70,7 +101,6 @@ export default function DetalhesRodoviaScreen() {
         <View style={[styles.conteinerPrincipal, { paddingTop: Platform.OS === 'ios' ? insets.top : 0 }]}>
             <StatusBar barStyle="light-content" backgroundColor="#612BFF" />
 
-   
             <View style={styles.cabecalho}>
                 <TouchableOpacity 
                     style={styles.botaoVoltar} 
@@ -82,10 +112,11 @@ export default function DetalhesRodoviaScreen() {
 
                 <View style={styles.textosCabecalho}>
                     <Text style={styles.tituloCabecalho}>Detalhamento de Trechos</Text>
-                    <Text style={styles.subtituloCabecalho}>{dadosRodovia.rodovia} • {trechosOrdenados.length} KMs mapeados</Text>
+                    <Text style={styles.subtituloCabecalho}>
+                        {carregando ? 'Carregando...' : `${rodoviaObj.rodovia} • ${trechosOrdenados.length} KMs mapeados`}
+                    </Text>
                 </View>
             </View>
-
 
             <View style={styles.barraFiltro}>
                 <View style={styles.infoFiltro}>
@@ -108,28 +139,46 @@ export default function DetalhesRodoviaScreen() {
                 </TouchableOpacity>
             </View>
 
-
-            <FlatList
-                data={trechosExibidos}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={renderItem}
-                contentContainerStyle={styles.listaContainer}
-                showsVerticalScrollIndicator={false}
-                ListEmptyComponent={
-                    <View style={styles.estadoVazio}>
-                        <Feather 
-                            name={mostrarTodos ? "map" : "check-circle"} 
-                            size={56} 
-                            color={mostrarTodos ? "#94A3B8" : "#10B981"} 
+            {carregando ? (
+                <View style={styles.estadoVazio}>
+                    <ActivityIndicator size="large" color="#612BFF" />
+                </View>
+            ) : (
+                <FlatList
+                    data={trechosExibidos}
+                    keyExtractor={(item, index) => (item.km ? item.km.toString() : index.toString())}
+                    renderItem={renderItem}
+                    contentContainerStyle={styles.listaContainer}
+                    showsVerticalScrollIndicator={false}
+                    refreshControl={
+                        <RefreshControl 
+                            refreshing={recarregando} 
+                            onRefresh={() => buscarTrechos(true)}
+                            colors={['#612BFF']}
+                            tintColor="#612BFF"
                         />
-                        <Text style={[styles.textoEstadoVazio, !mostrarTodos && { color: '#10B981' }]}>
-                            {mostrarTodos 
-                                ? 'Nenhum dado de quilometragem encontrado.' 
-                                : 'Excelente! Não há trechos em estado crítico nesta rodovia.'}
-                        </Text>
-                    </View>
-                }
-            />
+                    }
+                    ListEmptyComponent={
+                        <View style={styles.estadoVazio}>
+                            <Feather 
+                                name={erro ? "alert-circle" : (mostrarTodos ? "map" : "check-circle")} 
+                                size={56} 
+                                color={erro ? "#FF1453" : (mostrarTodos ? "#94A3B8" : "#10B981")} 
+                            />
+                            <Text style={[styles.textoEstadoVazio, !mostrarTodos && !erro && { color: '#10B981' }]}>
+                                {erro || (mostrarTodos 
+                                    ? 'Nenhum dado de quilometragem encontrado.' 
+                                    : 'Excelente! Não há trechos em estado crítico nesta rodovia.')}
+                            </Text>
+                            {erro ? (
+                                <TouchableOpacity style={styles.botaoLimparFiltros} onPress={() => buscarTrechos()}>
+                                    <Text style={styles.textoBotaoLimpar}>Tentar Novamente</Text>
+                                </TouchableOpacity>
+                            ) : null}
+                        </View>
+                    }
+                />
+            )}
         </View>
     );
 }
@@ -172,8 +221,6 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         marginTop: 2,
     },
-    
-    /* NOVA BARRA DE FILTRO */
     barraFiltro: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -215,7 +262,6 @@ const styles = StyleSheet.create({
     textoBotaoAlternarAtivo: {
         color: '#612BFF',
     },
-
     listaContainer: {
         padding: 16,
         paddingBottom: 40,
@@ -278,5 +324,17 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         paddingHorizontal: 20,
         lineHeight: 22,
+    },
+    botaoLimparFiltros: {
+        marginTop: 20,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        backgroundColor: '#F1F5F9',
+        borderRadius: 8,
+    },
+    textoBotaoLimpar: {
+        color: '#612BFF',
+        fontWeight: 'bold',
+        fontSize: 14,
     }
 });
