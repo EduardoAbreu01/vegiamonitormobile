@@ -1,136 +1,193 @@
-# VegiaMonitor
+# 🌿 VegiaMonitor — Monitoramento Preditivo e Operacional de Vegetação Rodoviária
+
+> **Projeto desenvolvido em parceria FIAP + Motiva**
+>
+> **Sprint 4 — Versão Final, APK de Produção e Plano de Negócio**
+
+## 📌 Links Rápidos e Entregáveis Finais
+
+* 📱 [**Download do APK Final (Android)**](https://github.com/EduardoAbreu01/vegiamonitormobile/releases) *(Ou link equivalente)*
+* 🎥 [**Vídeo de Pitch e Demonstração Final (YouTube)**](https://www.youtube.com/watch?v=RioUBZpXpA8)
+* 🎨 [**Protótipo Navegável de Alta Fidelidade (Figma)**](https://www.figma.com/proto/e7N028hcvrNlGwY91rd7N2/Prot%C3%B3tipo-Vegia-Monitor-Mobile?node-id=2-2&p=f&t=ExTvm6irflxRztrv-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=2%3A2)
+* 🌐 [**Serviço Backend API (REST)**](https://vegiamonitor-backend.onrender.com)
+
 ---
 
-## 👥 Integrantes
-* Eduardo Abreu
-* Gabriel De Biasi Couto
-* Gabriel dos Anjos
-* João Pedro da Silva Costa
-* João Pedro de Souza Ferreira
-* Rodrigo Campos Cordeiro
+## 👥 Integrantes do Grupo
+* **Eduardo Abreu**
+* **Gabriel De Biasi Couto**
+* **Gabriel dos Anjos**
+* **João Pedro da Silva Costa**
+* **João Pedro de Souza Ferreira**
+* **Rodrigo Campos Cordeiro**
 
 ---
-## 🚦 Status das Funcionalidades (Sprint 3 — Protótipo Funcional Completo)
 
-| Funcionalidade | Descrição | Status Atual |
-| :--- | :--- | :---: |
-| **Autenticação por CPF e Senha** | Validação de credenciais de operador/equipe através de contexto global (`AuthContext`) consumindo dados do `usuarios.json`. | 🟢 **Concluído** |
-| **Dashboard de Condições da Rodovia** | Exibição do Score Geral de Conservação (gerado por IA) e segmentação dos trechos por nível de vegetação. | 🟢 **Concluído** |
-| **Cronograma Operacional** | Lista de atividades de corte/roçada pendentes, filtradas dinamicamente de acordo com a equipe do colaborador logado. | 🟢 **Concluído** |
-| **Indicadores Visuais de Prazo** | Código de cores dinâmico no cronograma (Verde: Hoje, Amarelo: Esta Semana, Vermelho: Próxima Semana) e modal informativo de legenda. | 🟢 **Concluído** |
-| **Central de Notificações** | Exibição de alertas urgentes e informativos de segurança e alterações de rota. | 🟢 **Concluído** |
-| **Perfil e Integração WhatsApp** | Exibição de dados do colaborador logado e redirecionamento direto via Deep Linking para o WhatsApp do supervisor. | 🟢 **Concluído** |
-| **Documento de Testes Manuais** | Tabela contendo os 5+ fluxos principais testados, resultados esperados vs. obtidos e status de execução (`TESTES.md`). | 🟢 **Concluído** |
+## 🚀 Resumo de Evolução por Sprint
+
+```
+[ Sprint 1 ] ────────► [ Sprint 2 ] ────────► [ Sprint 3 ] ────────► [ Sprint 4 ]
+ Requisitos            App React Native       Fluxos Completos,      API RESTful,
+ Funcionais/RNF &      com Mocks JSON &       Estados de Exceção     AsyncStorage,
+ Arquitetura           Bottom Tabs            & Testes Manuais       APK & Business Plan
+```
+
+* **Sprint 1 (Levantamento de Requisitos & Arquitetura):** Mapeamento detalhado dos Requisitos Funcionais (RF) — autenticação por credencial, cronograma com trecho por KM, dashboard da rodovia com score e gráficos de nível da grama, central de notificações e contato rápido com gestor via WhatsApp — e Requisitos Não-Funcionais (RNF) focados em usabilidade externa sob luz do sol, compatibilidade com Android antigo e suporte à operação offline.
+* **Sprint 2 (Desenvolvimento do App Funcional com Mocks):** Construção da estrutura mobile em React Native/Expo com navegação por Bottom Tabs, aplicação do Design System de alto contraste e criação da camada de Mocks JSON locais (`usuarios.json`, `rodovias.json`, `rocadas.json`, `notificacoes.json`) para simular cenários reais da operação da Concessionária Motiva.
+* **Sprint 3 (Protótipo Funcional Completo & Validação de Testes):** Consolidação de 100% dos fluxos navegáveis (sem telas incompletas ou travamentos), evolução dos mocks para cobrir estados de erro, listas vazias e casos alternativos, e execução do Plano de Testes Manuais (`TESTES.md`) cobrindo os 5+ fluxos principais para identificação de pendências antes da entrega final.
+* **Sprint 4 (Integração Backend, Offline-First, APK & Plano de Negócio):** Substituição integral dos dados simulados por consumo da **API RESTful** hospedada na nuvem, implementação de persistência local resiliente via **`AsyncStorage`** para tolerância a falhas de conexão no campo, geração do **APK de Produção**, elaboração do **Plano de Negócio Executivo** e gravação do **Vídeo de Pitch Final**.
+
+---
+
+## 🟢 Status Atualizado das Funcionalidades (Sprint 4)
+
+| Funcionalidade | Descrição | Integração / Persistência | Status |
+| :--- | :--- | :--- | :---: |
+| **Autenticação de Operadores** | Validação de credenciais (CPF e Senha) no backend central com tratamento de erros HTTP. | API REST + `AsyncStorage` | 🟢 **Concluído** |
+| **Persistência de Sessão** | Manutenção do estado autenticado do operador mesmo ao fechar e reabrir o aplicativo. | `AsyncStorage` | 🟢 **Concluído** |
+| **Dashboard da Rodovia (IA)** | Exibição do Score Geral de Conservação e gráfico linear por altura de grama (Níveis 1, 2 e 3). | API REST (`/rodovias`) | 🟢 **Concluído** |
+| **Cronograma Operacional** | Lista de ordens de serviço e roteiro do dia (KM inicial e final) filtrados por equipe. | API REST + Cache `AsyncStorage` | 🟢 **Concluído** |
+| **Estratégia Offline-First** | Armazenamento temporário e cache do cronograma para consulta em áreas de sombra de sinal. | `AsyncStorage` | 🟢 **Concluído** |
+| **Central de Alertas & Notificações** | Listagem de avisos urgentes e informativos enviadas pela gestão com severidade visual. | API REST (`/notificacoes`) | 🟢 **Concluído** |
+| **Perfil & Deep Link WhatsApp** | Exibição de dados e botão de ação rápida "Contactar Gestor" via Deep Link nativo (`Linking`). | Deep Linking Nativo (`Linking`) | 🟢 **Concluído** |
+
+---
+
+## ⚡ Arquitetura de Integração: API Backend & AsyncStorage
+
+Nesta versão final (Sprint 4), a camada de dados simulados locais foi inteiramente substituída por uma arquitetura resiliente:
+
+```
+                  ┌─────────────────────────────────────────┐
+                  │    API Backend (Spring Boot)            │
+                  │https://vegiamonitor-backend.onrender.com│
+                  └────────────────────┬────────────────────┘
+                                       │ (Requisições HTTP REST / JSON)
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        VegiaMonitor Mobile App                          │
+│                                                                         │
+│   ┌───────────────────────────┐         ┌───────────────────────────┐   │
+│   │    Módulo `apiFetch`      │ ──────► │   Gestão de Estado Global │   │
+│   │   (Handling HTTP/Errors)  │         │       (`AuthContext`)     │   │
+│   └─────────────┬─────────────┘         └─────────────┬─────────────┘   │
+│                 │                                     │                 │
+│                 ▼                                     ▼                 │
+│   ┌─────────────────────────────────────────────────────────────┐       │
+│   │               Camada de Cache e Persistência                 │       │
+│   │                   `AsyncStorage` Local                      │       │
+│   └─────────────────────────────────────────────────────────────┘       │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+> ⚠️ **Observação sobre o Serviço no Render (Plano Gratuito):**  
+> Como a API RESTful em **Java / Spring Boot** está hospedada na camada gratuita do Render (*Free Tier*), a aplicação entra em modo de inatividade  após períodos sem requisições. Por conta disso, **a primeira requisição (como a tentativa de Login inicial) pode levar entre 30 e 50 segundos para responder** enquanto o contêiner da API é inicializado na nuvem. Após esse aquecimento (*cold start*), a comunicação volta a responder de forma rápida e regular.
+
+### 1. Consumo de API RESTful (`api.js`)
+* O aplicativo conecta-se à API principal (`https://vegiamonitor-backend.onrender.com`), realizando requisições HTTP (`GET`, `POST`, `PUT`) para sincronizar a autenticação, a listagem de roçadas, os trechos das rodovias e os avisos operacionais.
+* Foi desenvolvida uma camada centralizada `apiFetch` que trata cabeçalhos, requisições com timeout, tratamento de erros HTTP (401, 403, 500) e conversão de dados.
+
+### 2. Persistência Local e Tolerância a Desconexão (`AsyncStorage`)
+* Atendendo aos Requisitos Não-Funcionais estipulados na Sprint 1 para atuação em rodovias (áreas sem cobertura 3G/4G/5G):
+  1. **Manutenção do Login:** Armazenamento do token de sessão para evitar logins repetidos no campo.
+  2. **Cache de Consultas:** Armazenamento dos cronogramas e trechos em cache local no celular.
+  3. **Tolerância a Falhas:** Exibição fluida dos dados locais cached sem travamentos na interface.
 
 ---
 
 ## ☀️ Design e Acessibilidade em Campo (Visibilidade sob Luz Solar)
 
-Como a aplicação é voltada para operadores que atuam diretamente em trechos abertos de rodovias, **a interface visual foi especialmente projetada para garantir máxima legibilidade em ambientes sob forte incidência de luz solar e reflexos na tela**:
+Desenvolvido para atender rigorosamente ao requisito não-funcional de usabilidade sob iluminação solar direta:
 
-* **Alto Contraste Visual:** Utilização de fundos claros (`#F8FAFC` e `#FFFFFF`) combinados com tipografia pesada (`fontWeight: 'bold'`) em tons escuros (`#0F172A` e `#000000`), evitando cores pasteis ou neutras que somem sob a iluminação solar direta.
-* **Sinalização Visual de Alto Impacto:** Elementos de status e urgência utilizam blocos de cores saturadas e barras laterais calibradas (Verde Vivo `#00E676`, Amarelo `#FFEA00` e Rosa/Vermelho Neon `#FF1453`), permitindo identificação imediata da prioridade sem necessidade de esforço visual ou leitura atenta de pequenos textos.
-* **Hierarquia Tipográfica Expandida:** Títulos e indicadores principais possuem tamanhos de fonte ampliados (22px/18px com negrito) para garantir leitura rápida mesmo em movimento ou em smartphones com película protetora acentuada por poeira e reflexos.
-* **Áreas de Toque Ampliadas (Touch Targets):** Botões e seletores possuem preenchimento extra (*paddings* de 12px a 16px) e bordas bem definidas, facilitando o manuseio rápido por operadores no campo.
-
----
-
-## ⚠️ Pendências Identificadas & Plano de Ajustes (Sprint 4)
-
-### Pendências Identificadas
-1. **Consumo de Dados:** Dependência exclusiva de Mocks JSON locais (`usuarios.json`, `rocadas.json`, `rodovias.json`).
-2. **Persistência de Dados Offline:** Necessidade de aprimorar a sincronização e cache de alterações locais via `AsyncStorage` quando houver perda de conexão na estrada.
-3. **Feedback de Ações:** Adicionar feedbacks visuais (loaders e componentes Toast/Alerts customizados) ao realizar a troca de dados ou tentar login sem conexão.
-
-### Plano de Ajustes para a Sprint 4
-* **Integração com Backend API:** Substituir a camada de mocks por chamadas HTTP RESTful para consumo de dados em tempo real.
-* **Estratégia Offline-First:** Implementar fila de sincronização (Sync Queue) com `AsyncStorage` para armazenar status das roçadas quando offline e disparar para a API assim que a conexão for reestabelecida.
-* **Refinamento de UI/UX:** Adicionar telas de *Skeleton Loading* nas listas e tratamento de estados vazios (*empty states*).
-
-## ⚠️ O Problema Escolhido
-A falta de comunicação em tempo real e a ausência de rastreabilidade entre os gestores de monitoramento e as frentes de conservação rodoviária (como as equipes de corte). 
-
-Isso gera atrasos no cronograma, dificuldade em reportar imprevistos na via e risco de não conformidade com as exigências regulatórias da ARTESP e ANTT.
+* **Alto Contraste Visual:** Fundos claros de alta refletância (`#F8FAFC` e `#FFFFFF`) combinados com tipografia pesada (`fontWeight: 'bold'`) em tons escuros e profundos (`#0F172A`), garantindo legibilidade em campo.
+* **Sinalização Saturada de Prazos:** Prazos e alertas utilizam blocos de alta saturação (Verde `#00E676`, Amarelo `#FFEA00` e Rosa/Vermelho Neon `#FF1453`).
+* **Touch Targets Ampliados:** Botões e seletores possuem dimensões ampliadas (mínimo de 16px de padding) para facilitar a utilização por operadores vestindo luvas ou EPIs.
 
 ---
 
-## 👤 A Persona Principal
-* **Perfil:** Supervisor da Frente de Conservação (Equipe de Corte), 42 anos.
-* **Rotina:** Ele está diariamente na rodovia coordenando os operadores. Precisa garantir que a equipe cumpra a meta do dia com segurança.
-* **Habilidades Tecnológicas:** Tem familiaridade básica com smartphones, mas pouca paciência para sistemas complexos ou que necessitam 100% de estar conectado à internet.
+## 💼 Plano de Negócio Executivo (Business Plan)
+
+### 1. Proposta de Valor
+O **VegiaMonitor** substitui as vistorias manuais por um sistema inteligente de monitoramento preditivo de vegetação que combina **Visão Computacional** (câmeras de CFTV existentes) com uma **Arquitetura Híbrida de Calibração Física (*Ground Truth*)** por sensores a laser (ToF + ESP32) instalados pontualmente.
+* **Previsibilidade:** Algoritmos preditivos que projetam a altura do mato para janelas de 7 e 14 dias.
+* **Economia Operacional:** Redução de custos de mobilização de frentes de corte e otimização das rotas de roçada.
+
+### 2. Público-Alvo e Personas
+* **Concessionárias de Rodovias (Ex.: Grupo Motiva):** Gestores de conservação, diretores de operações e inovação.
+* **Supervisores e Operadores de Campo:** Profissionais que atuam na rodovia e usam o app para consultar tarefas offline.
+* **Órgãos Reguladores (ANTT / ARTESP):** Garantia de compliance com os indicadores contratuais de conservação viária.
+
+### 3. Modelo de Receita
+Modelo **B2B / SaaS (Software as a Service)** escalável:
+* **Assinatura Recorrente SaaS:** Mensalidade proporcional à extensão monitorada (**R$ / km / mês**).
+* **Taxa de Implantação (*Setup Fee*):** Cobrança pontual para integração com o CFTV existente e instalação dos nós IoT amostradores.
+* **Serviços Adicionais (Add-ons):** Módulos preditivos avançados e relatórios de governança regulatória.
+
+### 4. Estrutura de Custos
+* **Infraestrutura Cloud & IA:** Servidores de inferência visual e hospedagem de banco de dados.
+* **Hardware dos Nós IoT:** Custos reduzidos de montagem dos módulos amostradores (ESP32 + ToF).
+* **Desenvolvimento e Suporte:** Manutenção do app, treinamento de equipes e garantia de SLA.
 
 ---
 
-## 💡 Proposta de Solução
-O **VegiaMonitor** é um aplicativo mobile focado em criar uma ponte digital entre o campo e a gestão da Motiva. Ele centraliza a rotina do operador de campo, permitindo visualizar cronogramas de trabalho com indicadores visuais de prazo, acompanhar o score e a condição exata da rodovia (nível da grama), receber alertas da gestão em tempo real e facilitar o contato rápido com os supervisores.
+## 🛠️ Stack Tecnológica
+
+* **Frontend Mobile:** React Native / Expo
+* **Navegação:** React Navigation (Stack e Bottom Tabs)
+* **Gerenciamento de Estado Global:** React Context API (`AuthContext`)
+* **Persistência Local (Offline):** `@react-native-async-storage/async-storage`
+* **Comunicação com Backend:** Fetch API / `apiFetch` (JSON RESTful)
+* **Integrações Nativas:** Expo Linking (WhatsApp Deep Linking)
+* **Backend de Produção:** Java / Spring Boot Hospedado em nuvem (Render)
 
 ---
 
-## 🛠️ Stack Tecnológica e Justificativa
+## ⚙️ Instruções de Instalação e Execução
 
-* **Frontend Mobile:** React Native com Expo.
-  * *Justificativa:* Permite o desenvolvimento ágil e multiplataforma com uma única base de código em JavaScript/TypeScript. O ecossistema do Expo agiliza o setup do projeto e o teste em dispositivos físicos.
-* **Navegação:** React Navigation (Bottom Tabs e Stack).
-  * *Justificativa:* Garante uma navegação fluida entre as telas principais (Cronograma, Rodovia, Perfil) e fluxos modais (Notificações, Login), simulando o comportamento nativo esperado pelos usuários.
-* **Armazenamento Local:** AsyncStorage.
-  * *Justificativa:* Essencial para a estratégia *offline-first*. Permite salvar os dados do cronograma e o status da rodovia no cache do celular, garantindo que o app funcione em áreas de "sombra" de sinal de celular comuns nas estradas.
-* **Integração Externa:** Deep Linking (`Linking` do React Native).
-  * *Justificativa:* Utilizado na tela de Perfil para redirecionar o usuário diretamente para o WhatsApp corporativo do gestor, facilitando a comunicação imediata.
+### Opção A: Instalação Direta no Celular (APK Final)
+1. Baixe o arquivo `.apk` diretamente da [Release do Repositório](https://github.com/EduardoAbreu01/vegiamonitormobile/releases) em seu dispositivo Android.
+2. Autorize a instalação de fontes desconhecidas nas configurações do Android e conclua a instalação.
+3. Acesse o aplicativo **VegiaMonitor** com as credenciais cadastradas.
 
- ## Como Executar o Projeto
-
-### Pré-requisitos
-- Node.js instalado em sua máquina.
-- Expo CLI instalado globalmente (`npm install -g expo-cli`).
-- Aplicativo Expo Go instalado no seu dispositivo móvel (iOS ou Android) ou um emulador configurado.
-
-### Instalação e Execução
-1. Clone o repositório para a sua máquina:
-```bash
-git clone https://github.com/EduardoAbreu01/vegiamonitormobile.git
-```
-2. Instale as dependências necessárias:
-```bash
-npm install --legacy-peer-deps
-```
-3. Instale o expo-linking:
-```bash
-npx expo install expo-linking
-```
+### Opção B: Execução em Ambiente de Desenvolvimento (Expo CLI)
+1. Clone este repositório:
+   ```bash
+   git clone https://github.com/EduardoAbreu01/vegiamonitormobile.git
+   cd vegiamonitormobile
+   ```
+2. Instale as dependências:
+   ```bash
+   npm install --legacy-peer-deps
+   ```
+3. Instale os módulos nativos de linking e storage:
+   ```bash
+   npx expo install @react-native-async-storage/async-storage expo-linking
+   ```
 4. Inicie o servidor de desenvolvimento:
-```bash
-npm run android
+   ```bash
+   npx expo start
+   ```
+5. Escaneie o QR Code no terminal via aplicativo **Expo Go** em um celular ou pressione `a` para abrir no emulador Android.
+
+---
+
+## 🔐 Dados de Login
+
+ ```bash
+CPF: 32132132132
+ Senha: 123456
 ```
-5. Escaneie o QR Code gerado no terminal utilizando o aplicativo Expo Go no seu smartphone ou pressione `a` para abrir no emulador Android / `i` para abrir no emulador iOS.
 
----
 
-## 📂 Mocks de Dados
 
-Para viabilizar o uso em áreas sem internet, o app consome dados estruturados de arquivos locais JSON, simulando uma API:
 
-* **`usuarios.json`:** Valida o acesso no `AuthContext` na tela de login e preenche dinamicamente a tela de Perfil (foto, cargo, equipe e telefone de WhatsApp do gestor).
-* **`notificacoes.json`:** Alimenta a `FlatList` da central de Notificações, exibindo alertas de emergência e avisos informativos.
-* **`rodovias.json`:** Fornece o score de conservação e segmenta os quilômetros da via por níveis de altura de vegetação.
-* **`rocadas.json`:** Lista as tarefas de corte da equipe para a exibição no Cronograma. Os dados são calculados contra a data atual para filtrar as ações que ainda não foram realizadas na tela de cronograma e rodovia.
+## 📱 Demonstração Visual do Aplicativo
 
----
-## Demonstração Visual do Aplicativo
-
-Abaixo estão algumas das principais telas do **VegiaMonitor**, projetadas com alto contraste e foco na usabilidade em campo sob luz solar direta:
-
-| Tela de Login | Aba Cronograma | Dashboard da Rodovia |
+| Tela de Login (API REST) | Cronograma Operacional | Dashboard da Rodovia |
 | :---: | :---: | :---: |
 | ![Login](./assets/login-print.png) | ![Cronograma](./assets/cronograma-tela.png) | ![Rodovia](./assets/rodovia-tela.png) |
-| *Autenticação segura por CPF e senha* | *Cronograma de roçadas com prazos* | *Score de IA e status da rodovia* |
+| *Autenticação segura via API* | *Lista de tarefas com cache offline* | *Score de conservação e IA* |
 
-| Detalhamento de Trechos | Perfil do Operador | Central de Alertas |
+| Detalhamento por KM | Perfil & WhatsApp | Central de Alertas |
 | :---: | :---: | :---: |
 | ![Detalhes](./assets/detalhes-tela.png) | ![Perfil](./assets/perfil-tela.png) | ![Notificações](./assets/notificacoes-tela.png) |
-| *Filtro de trechos críticos (KM a KM)* | *Dados operacionais e WhatsApp* | *Histórico e filtros de avisos* |
-
-## Link do Youtube
-🔗 [Clique aqui para acessar o vídeo de demonstração](https://www.youtube.com/watch?v=RioUBZpXpA8)
-
-## 📱 Protótipo Figma
-🔗 [Clique aqui para acessar o protótipo navegável no Figma](https://www.figma.com/proto/e7N028hcvrNlGwY91rd7N2/Prot%C3%B3tipo-Vegia-Monitor-Mobile?node-id=2-2&p=f&t=ExTvm6irflxRztrv-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=2%3A2)
+| *Visão segmentada da via* | *Atendimento via Deep Linking* | *Avisos operacionais em tempo real* |
