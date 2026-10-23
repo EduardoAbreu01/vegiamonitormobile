@@ -6,8 +6,8 @@
 
 ## 📌 Links Rápidos e Entregáveis Finais
 
-* 📱 [**Download do APK Final (Android)**](https://github.com/EduardoAbreu01/vegiamonitormobile/releases) *(Ou link equivalente)*
-* 🎥 [**Vídeo de Pitch e Demonstração Final (YouTube)**](https://www.youtube.com/watch?v=RioUBZpXpA8)
+* 📱 [**Download do APK Final (Android)**](https://github.com/EduardoAbreu01/vegiamonitormobile/releases) 
+* 🎥 [**Vídeo de Pitch e Demonstração Final (YouTube)**](https://www.youtube.com/watch?v=SpUMtGRvd9g)
 * 🎨 [**Protótipo Navegável de Alta Fidelidade (Figma)**](https://www.figma.com/proto/e7N028hcvrNlGwY91rd7N2/Prot%C3%B3tipo-Vegia-Monitor-Mobile?node-id=2-2&p=f&t=ExTvm6irflxRztrv-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=2%3A2)
 * 🌐 [**Serviço Backend API (REST)**](https://vegiamonitor-backend.onrender.com)
 
